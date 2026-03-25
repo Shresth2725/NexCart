@@ -2,6 +2,7 @@ const express = require("express");
 const connectDB = require("./config/dbConnect");
 const authRouter = require("./routes/auth.route");
 const {connectRabbitMQWithRetry} = require("./config/rabbitMQ");
+const adminRouter = require("./routes/admin.route");
 require("dotenv").config();
 
 const app = express();
@@ -18,6 +19,7 @@ app.get("/" , (req , res) => {
   res.send("Auth service is running");
 })
 app.use("/auth" , authRouter)
+app.use("/admin" , adminRouter)
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
