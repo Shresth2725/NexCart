@@ -6,6 +6,7 @@ const adminRouter = require("./routes/admin.route");
 require("dotenv").config();
 
 const app = express();
+app.use(cookieParser());
 
 const start = async () => {
   await connectRabbitMQWithRetry();
@@ -18,6 +19,7 @@ app.use(express.json());
 app.get("/" , (req , res) => {
   res.send("Auth service is running");
 })
+
 app.use("/auth" , authRouter)
 app.use("/admin" , adminRouter)
 
