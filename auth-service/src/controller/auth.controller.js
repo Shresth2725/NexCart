@@ -2,6 +2,7 @@ const otpModel = require("../models/otp.model");
 const bcrypt = require("bcrypt");
 const {getChannel} = require("../config/rabbitMQ");
 const User = require("../models/user.model.js");
+const jwt = require("jsonwebtoken");
 
 const register = async (req, res) => {
   try {
@@ -175,6 +176,10 @@ const login = async (req , res) => {
 
 const logout = async (req , res) => {
   try {
+    // check if cookie exist or not 
+    if (!req.cookies.token) {
+      return res.status(400).json({message : "No cookie found"})
+    }
     res.clearCookie("token");
     return res.status(200).json({message : "User logged out successfully"})
   } catch (error) {
@@ -182,9 +187,13 @@ const logout = async (req , res) => {
   }
 }
 
+
+// protected routes
+
 const getAddresses = async (req , res) => {
   try {
-    const {email} = req.body;
+    const {email} = req.user;
+    console.log(req.user);
     if (!email) {
       return res.status(400).json({message : "Email is required"})
     }
@@ -198,12 +207,53 @@ const getAddresses = async (req , res) => {
   }
 }
 
+const putAddressDefault = async (req, res) => {
+  try {
+    const { email } = req.user;
+    const { addressId } = req.params;
+
+    if (!email || !addressId) {
+      return res.status(400).json({ message: "Email and addressId are required" });
+    }
+
+    // check if address exists
+    const user = await User.findOne({ email, "address._id": addressId });
+    if (!user) {
+      return res.status(404).json({ message: "Address not found" });
+    }
+
+    // set all to false
+    await User.updateOne(
+      { email },
+      { $set: { "address.$[].isDefault": false } }
+    );
+
+    // set selected address to true
+    await User.updateOne(
+      { email, "address._id": addressId },
+      { $set: { "address.$.isDefault": true } }
+    );
+
+    return res.status(200).json({ message: "Address set as default successfully" });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const addAddress = async (req , res) => {
   try {
-    const {email , address} = req.body;
+    const {email} = req.user;
+    const address = req.body;
     if (!email || !address) {
       return res.status(400).json({message : "Email and address are required"})
     }
+
+    const {street , city , state , pincode , country} = address;
+    if (!street || !city || !state || !pincode || !country) {
+      return res.status(400).json({message : "All address fields are required"})
+    }
+
     const user = await User.findOne({email}).lean();
     if (!user) {
       return res.status(404).json({message : "User not found"})
@@ -217,7 +267,8 @@ const addAddress = async (req , res) => {
 
 const removeAddress = async (req , res) => {
   try {
-    const {email , addressId} = req.body;
+    const {email } = req.user;
+    const {addressId} = req.params;
     if (!email || !addressId) {
       return res.status(400).json({message : "Email and addressId are required"})
     }
@@ -226,6 +277,7 @@ const removeAddress = async (req , res) => {
       return res.status(404).json({message : "User not found"})
     }
     await User.updateOne({email} , {$pull : {address : {_id : addressId}}})
+    
     return res.status(200).json({message : "Address deleted successfully"})
   } catch (error) {
     res.status(500).json({message : error.message})
@@ -234,7 +286,9 @@ const removeAddress = async (req , res) => {
 
 const updateAddress = async (req , res) => {
   try {
-    const {email , addressId , address} = req.body;
+    const {email} = req.user;
+    const address = req.body;
+    const {addressId} = req.params;
     if (!email || !addressId || !address) {
       return res.status(400).json({message : "Email , addressId and address are required"})
     }
@@ -285,25 +339,42 @@ const updateSellerInfo = async (req , res) => {
 
 const updatePassword = async (req , res) => {
   try {
-    const {email , password} = req.body;
-    if (!email || !password) {
-      return res.status(400).json({message : "Email and password are required"})
-    }
-    const user = await User.findOne({email}).lean();
-    if (!user) {
-      return res.status(404).json({message : "User not found"})
-    }
-    const isPasswordValid = await bcrypt.compare(password , user.password);
-    if (!isPasswordValid) {
-      return res.status(400).json({message : "Invalid password"})
-    }
-    await User.updateOne({email} , {$set : {password : bcrypt.hashSync(password , 10)}})
-    return res.status(200).json({message : "Password updated successfully"})
-  } catch (error) {
-    res.status(500).json({message : error.message})
-  }
-}
+    const { email } = req.user;
+    const { oldPassword, newPassword } = req.body;
 
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({
+        message: "oldPassword and newPassword are required"
+      });
+    }
+
+    const user = await User.findOne({ email }).select("+password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: "Invalid password" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await User.updateOne(
+      { email },
+      { $set: { password: hashedPassword } }
+    );
+
+    return res.status(200).json({
+      message: "Password updated successfully"
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 const forgetPassword = async (req , res) => {
   try {
     const {email} = req.body;
@@ -351,4 +422,4 @@ const verifyForgetPasswordOtp = async (req , res) => {
 }
 
 
-module.exports = {register , getUser , getAllUser , resendOTP , verifyUserOtp , login ,logout , getAddresses , addAddress , removeAddress , updateAddress , updateSellerInfo , updatePassword , updateUser , forgetPassword , verifyForgetPasswordOtp}
+module.exports = {register , getUser , getAllUser , resendOTP , verifyUserOtp , login ,logout , getAddresses , addAddress , removeAddress , updateAddress , updateSellerInfo , updatePassword , updateUser , forgetPassword , verifyForgetPasswordOtp , putAddressDefault}
