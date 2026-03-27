@@ -111,34 +111,6 @@ const resendOTP = async (req , res) => {
   }
 }
 
-const getAllUser = async (req , res) => {
-  try {
-    const users = await User.find().lean();
-    if (!users) {
-      return res.status(404).json({message : "No users found"})
-    }
-    return res.status(200).json({message : "Users fetched successfully" , users})
-  } catch (error) {
-    res.status(500).json({message : error.message})
-  }
-}
-
-const getUser = async (req , res) => {
-  try {
-    const {email} = req.body;
-    if (!email) {
-      return res.status(400).json({message : "Email is required"})
-    } 
-    const user = await User.findOne({email}).lean();
-    if (!user) {
-      return res.status(404).json({message : "User not found"})
-    }
-    return res.status(200).json({message : "User fetched successfully" , user})
-  } catch (error) {
-    res.status(500).json({message : error.message})
-  }
-}
-
 const login = async (req , res) => {
   try {
     const {email , password} = req.body;
@@ -436,5 +408,16 @@ const verifyForgetPasswordOtp = async (req , res) => {
   }
 }
 
+const me = async (req , res) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.status(404).json({message : "User not found"})
+    }
+    return res.status(200).json({message : "User fetched successfully" , user})
+  } catch (error) {
+    res.status(500).json({message : error.message})
+  }
+}
 
-module.exports = {register , getUser , getAllUser , resendOTP , verifyUserOtp , login ,logout , getAddresses , addAddress , removeAddress , updateAddress , updateSellerInfo , updatePassword , updateUser , forgetPassword , verifyForgetPasswordOtp , putAddressDefault}
+module.exports = {register , resendOTP , verifyUserOtp , login ,logout , getAddresses , addAddress , removeAddress , updateAddress , updateSellerInfo , updatePassword , updateUser , forgetPassword , verifyForgetPasswordOtp , putAddressDefault , me}
