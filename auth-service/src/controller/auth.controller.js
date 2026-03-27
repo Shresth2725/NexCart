@@ -305,7 +305,8 @@ const updateAddress = async (req , res) => {
 
 const updateUser = async (req , res) => {
   try {
-    const {email , name , phone , role} = req.body;
+    const {name , phone , role} = req.body;
+    const {email} = req.user;
     if (!email) {
       return res.status(400).json({message : "Email is required"})
     }
@@ -322,7 +323,8 @@ const updateUser = async (req , res) => {
 
 const updateSellerInfo = async (req , res) => {
   try {
-    const {email , storeName , storeDescription} = req.body;
+    const {storeName , storeDescription} = req.body;
+    const {email} = req.user;
     if (!email || !storeName || !storeDescription) {
       return res.status(400).json({message : "Email , storeName and storeDescription are required"})
     }
@@ -375,9 +377,10 @@ const updatePassword = async (req , res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 const forgetPassword = async (req , res) => {
   try {
-    const {email} = req.body;
+    const {email} = req.user;
     if (!email) {
       return res.status(400).json({message : "Email is required"})
     }
@@ -392,8 +395,12 @@ const forgetPassword = async (req , res) => {
     if (!channel) {
       return res.status(500).json({message : "Failed to connect to message queue"})
     }
-    await channel.sendToQueue("otp_received" , JSON.stringify({email , otp}));
-    await channel.close();
+    await channel.sendToQueue(
+      "otp_received",
+      Buffer.from(JSON.stringify({ email, otp }))
+    );
+
+    await otpModel.create({email , otp});
     return res.status(200).json({message : "OTP sent successfully"})
   } catch (error) {
     res.status(500).json({message : error.message})
@@ -402,20 +409,28 @@ const forgetPassword = async (req , res) => {
 
 const verifyForgetPasswordOtp = async (req , res) => {
   try {
-    const {email , otp} = req.body;
-    if (!email || !otp) {
-      return res.status(400).json({message : "Email and otp are required"})
+    const {email} = req.user;
+    const {password , otp} = req.body;
+    if (!password || !otp) {
+      return res.status(400).json({message : "password and otp are required"})
     }
     const user = await User.findOne({email}).lean();
     if (!user) {
       return res.status(404).json({message : "User not found"})
     }
-    const isOtpValid = await Otp.findOne({email , otp});
+    const isOtpValid = await otpModel.findOne({email , otp});
     if (!isOtpValid) {
       return res.status(400).json({message : "Invalid otp"})
     }
-    await Otp.deleteOne({email , otp});
-    return res.status(200).json({message : "OTP verified successfully"})
+    await otpModel.deleteOne({email , otp});
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await User.updateOne(
+      {email} , 
+      {$set : {password : hashedPassword}}
+    )
+    return res.status(200).json({message : "Password updated successfully"})
   } catch (error) {
     res.status(500).json({message : error.message})
   }

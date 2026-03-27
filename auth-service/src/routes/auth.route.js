@@ -18,10 +18,10 @@ authRouter.post("/putAddressDefault/:addressId" , protect , putAddressDefault) /
 authRouter.post("/addAddress" , protect , addAddress) // working
 authRouter.post("/removeAddress/:addressId" , protect , removeAddress) // working
 authRouter.post("/updateAddress/:addressId" , protect , updateAddress) // working
-authRouter.post("/updatePassword" , protect , updatePassword)
-authRouter.post("/forgetPassword" , protect , forgetPassword)
-authRouter.post("/updateUser" , protect , updateUser)
-authRouter.post("/updateSellerInfo" , protect , updateSellerInfo)
-authRouter.post("/verifyForgetPasswordOtp" , protect , verifyForgetPasswordOtp)
+authRouter.post("/updatePassword" , protect , updatePassword) // working
+authRouter.post("/forgetPassword" , protect , forgetPassword) // working
+authRouter.post("/updateUser" , protect , updateUser) // working
+authRouter.post("/updateSellerInfo" , protect , updateSellerInfo) // working
+authRouter.post("/verifyForgetPasswordOtp" , protect , verifyForgetPasswordOtp) // working
 
 module.exports = authRouter;
