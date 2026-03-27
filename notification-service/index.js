@@ -4,8 +4,11 @@ require("dotenv").config();
 
 async function start() {
   await connectRabbitMQWithRetry();
-
   const channel = getChannel();
+
+  await channel.assertQueue("otp_received", { durable: true });
+
+  channel.prefetch(1);
 
   channel.consume("otp_received", async (msg) => {
     if (!msg) return;
@@ -16,18 +19,27 @@ async function start() {
       const result = await sendOtpEmail(data.email, data.otp);
 
       if (result.success) {
-        console.log("OTP send successfully");
-
+        console.log(`OTP sent to ${data.email}`);
         channel.ack(msg);
       } else {
-        console.error("Email failed, requeueing...");
-        channel.nack(msg, false, true);
+        throw new Error("Email sending failed");
       }
 
     } catch (error) {
-      console.error("Processing error:", error);
+      const retries = msg.properties.headers?.["x-retries"] || 0;
 
-      channel.nack(msg, false, true);
+      if (retries >= 3) {
+        console.error("Max retries reached. Dropping message.");
+        channel.ack(msg);
+      } else {
+        console.log(`Retrying... attempt ${retries + 1}`);
+
+        channel.nack(msg, false, false);
+
+        channel.sendToQueue("otp_received", msg.content, {
+          headers: { "x-retries": retries + 1 }
+        });
+      }
     }
   });
 }

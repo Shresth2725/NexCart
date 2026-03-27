@@ -38,3 +38,13 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+
+  api-gateway:
+    image: nginx:latest
+    container_name: api-gateway
+    ports:
+      - "80:80"
+    volumes:
+      - ./api-gateway/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - auth-service
