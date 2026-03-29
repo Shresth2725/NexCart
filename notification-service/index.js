@@ -42,6 +42,19 @@ async function start() {
       }
     }
   });
+
+  channel.consume("product_added", async (msg) => {
+    if (!msg) return;
+
+    try {
+      const data = JSON.parse(msg.content.toString());
+      console.log(`Product added: ${data.name}`);
+      channel.ack(msg);
+    } catch (error) {
+      console.log(error);
+      channel.nack(msg);
+    }
+  });
 }
 
 start();
