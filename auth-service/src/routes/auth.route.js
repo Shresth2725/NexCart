@@ -1,5 +1,5 @@
 const express = require("express");
-const {register, verifyUserOtp, resendOTP, login , logout , getAddresses , addAddress , removeAddress , updateAddress , updatePassword , forgetPassword , updateUser , updateSellerInfo, verifyForgetPasswordOtp, putAddressDefault, me} = require("../controller/auth.controller");
+const {register, verifyUserOtp, resendOTP, login , logout , getAddresses , addAddress , removeAddress , updateAddress , updatePassword , forgetPassword , updateUser , updateSellerInfo, verifyForgetPasswordOtp, putAddressDefault, me, getUserById} = require("../controller/auth.controller");
 const {protect} = require("../middleware/protectedRoute");
 
 const authRouter = express.Router();
@@ -22,5 +22,6 @@ authRouter.post("/updateUser" , protect , updateUser) // working
 authRouter.post("/updateSellerInfo" , protect , updateSellerInfo) // working
 authRouter.post("/verifyForgetPasswordOtp" , protect , verifyForgetPasswordOtp) // working
 authRouter.get("/me" , protect , me) // working
+authRouter.get("/:id" , getUserById) // working
 
 module.exports = authRouter;

@@ -5,18 +5,18 @@ const protect = async (req , res , next) => {
   try {
     const token = req.cookies.token;
     if (!token) {
-      return res.status(401).json({message : "Unauthorized"})
+      return res.status(401).json({message : "Auth-Service - Protect Middleware - protect - Unauthorized"})
     }
     const decodedToken = jwt.verify(token , process.env.JWT_SECRET);
     const id = decodedToken.id;
     const user = await User.findById(id).select("-password").lean();
     if (!user) {
-      return res.status(404).json({message : "User not found"})
+      return res.status(404).json({message : "Auth-Service - Protect Middleware - protect - User not found"})
     }
     req.user = user;
     next();
   } catch (error) {
-    res.status(500).json({message : error.message})
+    res.status(500).json({message : `Auth-Service - Protect Middleware - protect - ${error.message}`})
   }
 }
 
