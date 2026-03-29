@@ -28,7 +28,10 @@ const productSchema = new mongoose.Schema(
       trim: true,
     },
 
-    description: String,
+    description: {
+      type: String,
+      required: true,
+    },
 
     price: {
       type: Number,
@@ -47,7 +50,10 @@ const productSchema = new mongoose.Schema(
       index: true,
     },
 
-    brand: String,
+    brand: {
+      type: String,
+      required: true,
+    },
 
     stock: {
       type: Number,
