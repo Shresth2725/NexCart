@@ -1,5 +1,6 @@
 const { connectRabbitMQWithRetry, getChannel } = require("./rabbitMQ");
 const { sendOtpEmail } = require("./sendOTP.js");
+const { sendProductAddEmail } = require("./sendProductAdd.js");
 require("dotenv").config();
 
 async function start() {
@@ -48,11 +49,25 @@ async function start() {
 
     try {
       const data = JSON.parse(msg.content.toString());
-      console.log(`Product added: ${data.name}`);
-      channel.ack(msg);
+      
+      if (!data.product || !data.email) {
+        console.error("Malformed message received, discarding...", data);
+        channel.ack(msg);
+        return;
+      }
+
+      console.log(`Product added: ${data.product.name}`);
+      const result = await sendProductAddEmail(data.email, data.product);
+      if (result.success) {
+        console.log(`Product added email sent: ${data.product.name}`);
+        channel.ack(msg);
+      } else {
+        throw new Error("Email sending failed");
+      }
     } catch (error) {
-      console.log(error);
-      channel.nack(msg);
+      console.log("Error processing message:", error.message);
+      // Discard the message on error instead of requeuing infinitely
+      channel.nack(msg, false, false);
     }
   });
 }

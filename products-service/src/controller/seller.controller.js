@@ -22,7 +22,7 @@ const createProduct = async (req, res) => {
         });
 
         const channel = getChannel();
-        channel.sendToQueue("product_added", Buffer.from(JSON.stringify(product)));
+        channel.sendToQueue("product_added", Buffer.from(JSON.stringify({ product, email: req.user.email })));
 
         res.status(201).json({ message: "Products-Service - Seller Route - Create Product API - Product created successfully", product });
     } catch (error) {
