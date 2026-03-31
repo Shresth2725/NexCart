@@ -1,4 +1,3 @@
-// Update this for product update email
 const { Resend } = require("resend");
 require("dotenv").config();
 

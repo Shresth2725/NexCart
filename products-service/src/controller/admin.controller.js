@@ -47,7 +47,55 @@ const getAllProducts = async (req , res) => {
     }
 }
 
+const deleteReview = async (req , res) => {
+    try {
+        const reviewId = req.params.id;
+        const review = await Review.findById(reviewId);
+        if(!review){
+            return res.status(404).json({
+                success: false,
+                message: "Products-Service - Admin Controller - deleteReview - Review not found",
+            });
+        }
+        await review.remove();
+        return res.status(200).json({
+            success: true,
+            message: "Products-Service - Admin Controller - deleteReview - Review deleted successfully",
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Products-Service - Admin Controller - deleteReview - " + error.message,
+        });
+    }
+}
+
+const deleteProduct = async (req , res) => {
+    try {
+        const productId = req.params.id;
+        const product = await Product.findById(productId);
+        if(!product){
+            return res.status(404).json({
+                success: false,
+                message: "Products-Service - Admin Controller - deleteProduct - Product not found",
+            });
+        }
+        await product.remove();
+        return res.status(200).json({
+            success: true,
+            message: "Products-Service - Admin Controller - deleteProduct - Product deleted successfully",
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Products-Service - Admin Controller - deleteProduct - " + error.message,
+        });
+    }
+}
+
 module.exports = {
     toggleProductStatus,
-    getAllProducts
+    getAllProducts,
+    deleteReview,
+    deleteProduct
 }

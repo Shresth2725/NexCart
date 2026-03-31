@@ -7,6 +7,7 @@ require("dotenv").config();
 const cors = require("cors");
 const customerRoute = require("./routes/customer.route");
 const adminRoute = require("./routes/admin.route");
+const reviewRoute = require("./routes/review.route");
 
 const app = express();
 app.use(cors({
@@ -27,6 +28,7 @@ app.get("/", (req, res) => {
 app.use("/seller", sellerRoute);
 app.use("/customer", customerRoute);
 app.use("/admin", adminRoute);
+app.use("/reviews", reviewRoute);
 
 app.listen(process.env.PORT, () => {
   console.log(`Products Service is running on port ${process.env.PORT}`);

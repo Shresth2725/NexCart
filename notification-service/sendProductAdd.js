@@ -1,4 +1,3 @@
-// import { Resend } from 'resend';
 const { Resend } = require("resend");
 require("dotenv").config();
 
