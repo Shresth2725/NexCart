@@ -1,6 +1,6 @@
 const express = require('express') ; 
 const { authMiddleware } = require('../middleware/auth.middleware');
-const { addReview , getReviews, editReview } = require('../controller/review.controller');
+const { addReview , getReviews, editReview, deleteReview } = require('../controller/review.controller');
 
 const reviewRoute = express.Router() ;
 

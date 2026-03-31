@@ -1,4 +1,4 @@
-const Product = require("../models/product.model");
+const productsModel = require("../models/products.model");
 const Review = require("../models/review.model");
 
 const addReview = async (req, res) => {
@@ -11,7 +11,7 @@ const addReview = async (req, res) => {
 
         const userId = req.user.id;
 
-        const product = await Product.findById(productId);
+        const product = await productsModel.findById(productId);
 
         if (!product) {
             return res.status(404).json({ success: false, message: " product service - review - addReview - Product not found" });
