@@ -1,6 +1,8 @@
 const { connectRabbitMQWithRetry, getChannel } = require("./rabbitMQ");
 const { sendOtpEmail } = require("./sendOTP.js");
 const { sendProductAddEmail } = require("./sendProductAdd.js");
+const { sendProductDeleteEmail } = require("./sendProductDeleteEmail.js");
+const { sendProductUpdateEmail } = require("./sendProductUpdateEmail.js");
 require("dotenv").config();
 
 async function start() {
@@ -67,6 +69,58 @@ async function start() {
     } catch (error) {
       console.log("Error processing message:", error.message);
       // Discard the message on error instead of requeuing infinitely
+      channel.nack(msg, false, false);
+    }
+  });
+
+  channel.consume("product_updated", async (msg) => {
+    if (!msg) return;
+
+    try {
+      const data = JSON.parse(msg.content.toString());
+      
+      if (!data.product || !data.email) {
+        console.error("Malformed message received, discarding...", data);
+        channel.ack(msg);
+        return;
+      }
+
+      console.log(`Product updated: ${data.product.name}`);
+      const result = await sendProductUpdateEmail(data.email, data.product);
+      if (result.success) {
+        console.log(`Product updated email sent: ${data.product.name}`);
+        channel.ack(msg);
+      } else {
+        throw new Error("Email sending failed");
+      }
+    } catch (error) {
+      console.log("Error processing message:", error.message);
+      channel.nack(msg, false, false);
+    }
+  });
+
+  channel.consume("product_deleted", async (msg) => {
+    if (!msg) return;
+
+    try{
+      const data = JSON.parse(msg.content.toString());
+      
+      if (!data.product || !data.email) {
+        console.error("Malformed message received, discarding...", data);
+        channel.ack(msg);
+        return;
+      }
+
+      console.log(`Product deleted: ${data.product.name}`);
+      const result = await sendProductDeleteEmail(data.email, data.product);
+      if (result.success) {
+        console.log(`Product deleted email sent: ${data.product.name}`);
+        channel.ack(msg);
+      } else {
+        throw new Error("Email sending failed");
+      }
+    } catch (error) {
+      console.log("Error processing message:", error.message);
       channel.nack(msg, false, false);
     }
   });

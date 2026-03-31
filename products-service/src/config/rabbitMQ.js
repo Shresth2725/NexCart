@@ -7,6 +7,8 @@ async function connectRabbitMQWithRetry(retries = 5, delay = 3000) {
       connection = await amqp.connect("amqp://localhost:5672")
       channel = await connection.createChannel();
       await channel.assertQueue("product_added");
+      await channel.assertQueue("product_updated");
+      await channel.assertQueue("product_deleted");
       console.log("Connected to RabbitMQ");
       return;
     } catch (error) {

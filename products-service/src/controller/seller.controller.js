@@ -58,6 +58,10 @@ const updateProduct = async (req, res) => {
         if(!product) {
             return res.status(404).json({ message: "Products-Service - Seller Route - Update Product API - Product not found" });
         }
+
+        const channel = getChannel();
+        channel.sendToQueue("product_updated", Buffer.from(JSON.stringify({ product, email: req.user.email })));
+
         res.status(200).json({ message: "Products-Service - Seller Route - Update Product API - Product updated successfully", product });
     } catch (error) {
         res.status(500).json({ message: "Products-Service - Seller Route - Update Product API - Internal server error", error });
@@ -79,6 +83,9 @@ const deleteProduct = async (req, res) => {
         if(product.sellerId !== req.user.id) {
             return res.status(403).json({ message: "Products-Service - Seller Route - Delete Product API - Unauthorized" });
         }
+
+        const channel = getChannel();
+        channel.sendToQueue("product_deleted", Buffer.from(JSON.stringify({ product, email: req.user.email })));
 
         const deletedProduct = await productsModel.findByIdAndDelete(id);
         if(!deletedProduct) {
