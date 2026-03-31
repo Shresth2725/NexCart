@@ -4,10 +4,10 @@ const { authMiddleware } = require("../middleware/auth.middleware");
 
 const customerRoute = express.Router(); 
 
-customerRoute.get("/randomProductSuggestion", authMiddleware, randomProductSuggestion);
+customerRoute.get("/randomProductSuggestion", authMiddleware, randomProductSuggestion); // working
 
-customerRoute.get("/product/:id" , authMiddleware , getProductById)
+customerRoute.get("/product/:id" , authMiddleware , getProductById) // working
 
-customerRoute.get("/search" , authMiddleware , searchProducts)
+customerRoute.get("/search" , authMiddleware , searchProducts) // working
 
 module.exports = customerRoute;
