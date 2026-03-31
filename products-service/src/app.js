@@ -5,6 +5,7 @@ const { connectRabbitMQWithRetry } = require("./config/rabbitMQ");
 const cookieParser = require("cookie-parser");
 require("dotenv").config();
 const cors = require("cors");
+const customerRoute = require("./routes/customer.route");
 
 const app = express();
 app.use(cors({
@@ -23,6 +24,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/seller", sellerRoute);
+app.use("/customer" , customerRoute)
 
 app.listen(process.env.PORT, () => {
   console.log(`Products Service is running on port ${process.env.PORT}`);

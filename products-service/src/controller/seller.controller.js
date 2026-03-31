@@ -90,4 +90,20 @@ const deleteProduct = async (req, res) => {
     }
 }
 
-module.exports = { createProduct, getProducts, updateProduct, deleteProduct };
+const getProductById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(400).json({ message: "Products-Service - Seller Route - Get Product By ID API - Product ID is required" });
+        }
+        const product = await productsModel.findById(id);
+        if(!product) {
+            return res.status(404).json({ message: "Products-Service - Seller Route - Get Product By ID API - Product not found" });
+        }
+        res.status(200).json({ message: "Products-Service - Seller Route - Get Product By ID API - Product fetched successfully", product });
+    } catch (error) {
+        res.status(500).json({ message: "Products-Service - Seller Route - Get Product By ID API - Internal server error", error });
+    }
+}
+
+module.exports = { createProduct, getProducts, updateProduct, deleteProduct, getProductById };
