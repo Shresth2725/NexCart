@@ -1,3 +1,4 @@
+const { getChannel } = require("../config/rabbitMQ");
 const Product = require("../models/products.model");
 
 const toggleProductStatus = async (req , res) => {
@@ -12,6 +13,11 @@ const toggleProductStatus = async (req , res) => {
         }
         product.isActive = !product.isActive;
         await product.save();
+
+        // publish event to rabbitmq
+        const channel = getChannel();
+        channel.sendToQueue("product_status_updated", Buffer.from(JSON.stringify({product , email: product.seller.email})));
+
         return res.status(200).json({
             success: true,
             data: product,
@@ -58,6 +64,11 @@ const deleteReview = async (req , res) => {
             });
         }
         await review.remove();
+
+        // publish event to rabbitmq
+        const channel = getChannel();
+        channel.sendToQueue("review_deleted", Buffer.from(JSON.stringify({review , email: req.user.email})));
+
         return res.status(200).json({
             success: true,
             message: "Products-Service - Admin Controller - deleteReview - Review deleted successfully",
@@ -80,7 +91,12 @@ const deleteProduct = async (req , res) => {
                 message: "Products-Service - Admin Controller - deleteProduct - Product not found",
             });
         }
-        await product.remove();
+        await Product.findByIdAndDelete(productId);
+
+        // publish event to rabbitmq
+        const channel = getChannel();
+        channel.sendToQueue("product_deleted_by_admin", Buffer.from(JSON.stringify({product , email: req.user.email})));
+
         return res.status(200).json({
             success: true,
             message: "Products-Service - Admin Controller - deleteProduct - Product deleted successfully",

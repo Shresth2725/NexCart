@@ -3,6 +3,8 @@ const {
   sendProductAddEmail,
   sendProductUpdateEmail,
   sendProductDeleteEmail,
+  sendProductStatusUpdateEmailByAdmin,
+  sendProductDeleteEmailByAdmin,
 } = require("../services/emailService");
 
 async function startProductConsumer() {
@@ -116,6 +118,82 @@ async function startProductConsumer() {
     } catch (error) {
       console.error(
         "Notification Service - Queue - product_deleted - Error processing message:",
+        error.message,
+      );
+      channel.nack(msg, false, false);
+    }
+  });
+
+  channel.consume("product_status_updated", async (msg) => {
+    if (!msg) return;
+
+    try {
+      const data = JSON.parse(msg.content.toString());
+
+      if (!data.product || !data.email) {
+        console.error(
+          "Notification Service - Queue - product_status_updated - Malformed message received",
+          data,
+        );
+        channel.ack(msg);
+        return;
+      }
+
+      console.log(
+        `Notification Service - Queue - product_status_updated - ${JSON.stringify(data)}`,
+      );
+      const result = await sendProductStatusUpdateEmailByAdmin(data.email, data.product);
+      if (result.success) {
+        console.log(
+          `Notification Service - Queue - product_status_updated - Email sent for ${data.product.name}`,
+        );
+        channel.ack(msg);
+      } else {
+        throw new Error(
+          "Notification Service - Queue - product_status_updated - Email sending failed",
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Notification Service - Queue - product_status_updated - Error processing message:",
+        error.message,
+      );
+      channel.nack(msg, false, false);
+    }
+  });
+
+  channel.consume("product_deleted_by_admin", async (msg) => {
+    if (!msg) return;
+
+    try {
+      const data = JSON.parse(msg.content.toString());
+
+      if (!data.product || !data.email) {
+        console.error(
+          "Notification Service - Queue - product_deleted_by_admin - Malformed message received",
+          data,
+        );
+        channel.ack(msg);
+        return;
+      }
+
+      console.log(
+        `Notification Service - Queue - product_deleted_by_admin - ${data.product.name}`,
+      );
+      const result = await sendProductDeleteEmailByAdmin(data.email, data.product);
+      if (result.success) {
+        console.log(
+          `Notification Service - Queue - product_deleted_by_admin - Email sent for ${data.product.name}`,
+        );
+        channel.ack(msg);
+      } else {
+        throw new Error(
+          "Notification Service - Queue - product_deleted_by_admin - Email sending failed",
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Notification Service - Queue - product_deleted_by_admin - Error processing message:",
         error.message,
       );
       channel.nack(msg, false, false);

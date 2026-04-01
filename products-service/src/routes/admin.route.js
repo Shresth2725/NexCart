@@ -5,12 +5,12 @@ const { toggleProductStatus, getAllProducts, deleteReview, deleteProduct } = req
 
 const adminRoute = express.Router();
 
-adminRoute.post("/toggleProductStatus/:id" , authMiddleware , adminCheckMiddleware , toggleProductStatus)
+adminRoute.post("/toggleProductStatus/:id" , authMiddleware , adminCheckMiddleware , toggleProductStatus) // working
 
-adminRoute.get("/allProducts" , authMiddleware , adminCheckMiddleware , getAllProducts)
+adminRoute.get("/allProducts" , authMiddleware , adminCheckMiddleware , getAllProducts) // working
 
 adminRoute.delete("/deleteReview/:id" , authMiddleware , adminCheckMiddleware , deleteReview)
 
-adminRoute.delete("/deleteProduct/:id" , authMiddleware , adminCheckMiddleware , deleteProduct)
+adminRoute.delete("/deleteProduct/:id" , authMiddleware , adminCheckMiddleware , deleteProduct) // working
 
 module.exports = adminRoute;

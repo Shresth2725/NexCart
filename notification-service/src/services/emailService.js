@@ -126,9 +126,73 @@ const sendProductDeleteEmail = async (email, product) => {
   }
 };
 
+const sendProductStatusUpdateEmailByAdmin = async (email, product) => {
+  const { name, description, price, category, brand, stock, isActive } = product;
+  try {
+    const response = await resend.emails.send({
+      from: "NexCart <onboarding@resend.dev>",
+      to: email,
+      subject: "Your Product Status Updated By Admin",
+      html: `
+        <div style="font-family: Arial, sans-serif;">
+          <h2>Product Status Updated</h2>
+          <p>Your product has been updated successfully</p>
+          <p><b>Status:</b> ${isActive ? "Active" : "Inactive"}</p>
+          <p><b>Name:</b> ${name}</p>
+          <p><b>Price:</b> ₹${price}</p>
+          <p><b>Description:</b> ${description}</p>
+          <p><b>Category:</b> ${category}</p>
+          <p><b>Brand:</b> ${brand}</p>
+          <p><b>Stock:</b> ${stock}</p>
+          </div>
+      `,
+    });
+
+    return { success: true, data: response };
+  } catch (error) {
+    console.error(
+      "Notification Service - Resend - sendProductStatusUpdateEmail - Email sending failed:",
+      error,
+    );
+    return { success: false, error };
+  }
+};
+
+const sendProductDeleteEmailByAdmin = async (email, product) => {
+  const { name, description, price, category, brand, stock } = product;
+  try {
+    const response = await resend.emails.send({
+      from: "NexCart <onboarding@resend.dev>",
+      to: email,
+      subject: "Your Product Deleted By Admin",
+      html: `
+        <div style="font-family: Arial, sans-serif;">
+          <h2>Product Deleted By Admin</h2>
+          <p>Your product has been deleted successfully by admin</p>
+          <p><b>Name:</b> ${name}</p>
+          <p><b>Price:</b> ₹${price}</p>
+          <p><b>Description:</b> ${description}</p>
+          <p><b>Category:</b> ${category}</p>
+          <p><b>Brand:</b> ${brand}</p>
+          <p><b>Stock:</b> ${stock}</p>
+          </div>
+      `,
+    });
+    return { success: true, data: response };
+  } catch (error) {
+    console.error(
+      "Notification Service - Resend - sendReviewDeleteEmail - Email sending failed:",
+      error,
+    );
+    return { success: false, error };
+  }
+}
+
 module.exports = {
   sendOtpEmail,
   sendProductAddEmail,
   sendProductUpdateEmail,
   sendProductDeleteEmail,
+  sendProductStatusUpdateEmailByAdmin,
+  sendProductDeleteEmailByAdmin,
 };

@@ -18,7 +18,7 @@ const createProduct = async (req, res) => {
             stock,
             sellerId: req.user.id,
             images: req.files ? req.files.map((file) => file.path) : [],
-            seller: {name: req.user.name, storeName:req.user.sellerInfo.storeName , storeDescription:req.user.sellerInfo.storeDescription}
+            seller: {name: req.user.name, email: req.user.email, storeName:req.user.sellerInfo.storeName , storeDescription:req.user.sellerInfo.storeDescription}
         });
 
         const channel = getChannel();

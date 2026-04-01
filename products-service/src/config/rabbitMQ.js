@@ -9,6 +9,8 @@ async function connectRabbitMQWithRetry(retries = 5, delay = 3000) {
       await channel.assertQueue("product_added");
       await channel.assertQueue("product_updated");
       await channel.assertQueue("product_deleted");
+      await channel.assertQueue("product_deleted_by_admin");
+      await channel.assertQueue("product_status_updated");
       console.log("Connected to RabbitMQ");
       return;
     } catch (error) {
