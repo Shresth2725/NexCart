@@ -4,10 +4,10 @@ const { addReview , getReviews, editReview, deleteReview } = require('../control
 
 const reviewRoute = express.Router() ;
 
-reviewRoute.post("/add", authMiddleware , addReview);
-reviewRoute.get("/getReviews/:productId", getReviews);
-reviewRoute.put("/editReview", authMiddleware , editReview);
-reviewRoute.delete("/deleteReview/:reviewId", authMiddleware , deleteReview);
+reviewRoute.post("/add", authMiddleware , addReview); // working
+reviewRoute.get("/getReviews/:productId", getReviews); // working
+reviewRoute.post("/editReview/:reviewId", authMiddleware , editReview); // working
+reviewRoute.delete("/deleteReview/:reviewId", authMiddleware , deleteReview); // working
 
 
 module.exports = reviewRoute ; 

@@ -1,5 +1,6 @@
 const productsModel = require("../models/products.model");
 const Review = require("../models/review.model");
+const axios = require("axios");
 
 const addReview = async (req, res) => {
     try {
@@ -35,39 +36,35 @@ const getReviews = async (req, res) => {
         const { productId } = req.params;
 
         if (!productId) {
-            return res.status(400).json({ success: false, message: "product service - review - getReviews - Product ID is required" });
+            return res.status(400).json({
+                success: false,
+                message: "Product ID is required"
+            });
         }
 
+        // 🎯 Get all reviews
+        const reviews = await Review.find({ productId })
+            .select("userId rating comment createdAt");
 
-        // get random 5 reviews
-        const reviews = await Review.aggregate([
-            { $match: { productId } },
-            { $sample: { size: 5 } },
-
-        ]);
-
-        // get user details but it is in auth service so we need to make a request to auth service and merge in reviews
-        const users = await axios.get(`http://localhost:3001/auth/${reviews.map(review => review.userId)}`);
-
-        // merge reviews and users
-        const mergedReviews = reviews.map(review => {
-            const user = users.find(user => user._id === review.userId);
-            return {
-                ...review,
-                user
-            }
+        return res.status(200).json({
+            success: true,
+            data: reviews,
+            message: "All reviews fetched successfully"
         });
 
-        res.status(200).json({ success: true, data: mergedReviews , message: "product service - review - getReviews - Reviews fetched successfully" });
     } catch (error) {
-        res.status(500).json({ success: false, message: "product service - review - getReviews - " + error.message });
+        return res.status(500).json({
+            success: false,
+            message: "getReviews error: " + error.message
+        });
     }
-}
+};
 
 const editReview = async (req, res) => {
     try {
-        const { reviewId, rating, comment } = req.body;
-
+        console.log(req.body);
+        const {rating, comment } = req.body;
+        const {reviewId} = req.params;
         if (!reviewId || !rating || !comment) {
             return res.status(400).json({ success: false, message: "product service - review - editReview - All fields are required" });
         }
@@ -110,7 +107,7 @@ const deleteReview = async (req, res) => {
             return res.status(403).json({ success: false, message: "product service - review - deleteReview - You are not authorized to delete this review" });
         }
 
-        await review.remove();
+        await Review.findByIdAndDelete(reviewId);
 
         res.status(200).json({ success: true, message: "product service - review - deleteReview - Review deleted successfully" });
     } catch (error) {
