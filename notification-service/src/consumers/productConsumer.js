@@ -5,6 +5,7 @@ const {
   sendProductDeleteEmail,
   sendProductStatusUpdateEmailByAdmin,
   sendProductDeleteEmailByAdmin,
+  sendReviewDeleteEmailByAdmin
 } = require("../services/emailService");
 
 async function startProductConsumer() {
@@ -194,6 +195,44 @@ async function startProductConsumer() {
     } catch (error) {
       console.error(
         "Notification Service - Queue - product_deleted_by_admin - Error processing message:",
+        error.message,
+      );
+      channel.nack(msg, false, false);
+    }
+  });
+
+  channel.consume("review_deleted", async (msg) => {
+    if (!msg) return;
+
+    try {
+      const data = JSON.parse(msg.content.toString());
+
+      if (!data.review || !data.email) {
+        console.error(
+          "Notification Service - Queue - review_deleted - Malformed message received",
+          data,
+        );
+        channel.ack(msg);
+        return;
+      }
+
+      console.log(
+        `Notification Service - Queue - review_deleted - ${JSON.stringify(data)}`,
+      );
+      const result = await sendReviewDeleteEmailByAdmin(data.email, data.review);
+      if (result.success) {
+        console.log(
+          `Notification Service - Queue - review_deleted - Email sent for ${data.review.productId}`,
+        );
+        channel.ack(msg);
+      } else {
+        throw new Error(
+          "Notification Service - Queue - review_deleted - Email sending failed",
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Notification Service - Queue - review_deleted - Error processing message:",
         error.message,
       );
       channel.nack(msg, false, false);

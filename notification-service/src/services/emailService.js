@@ -188,6 +188,33 @@ const sendProductDeleteEmailByAdmin = async (email, product) => {
   }
 }
 
+const sendReviewDeleteEmailByAdmin = async (email, review) => {
+  const { rating, comment, productId } = review;
+  try {
+    const response = await resend.emails.send({
+      from: "NexCart <onboarding@resend.dev>",
+      to: email,
+      subject: "Your Review Deleted By Admin",
+      html: `
+        <div style="font-family: Arial, sans-serif;">
+          <h2>Review Deleted By Admin</h2>
+          <p>Your review has been deleted successfully by admin</p>
+          <p><b>Rating:</b> ${rating}</p>
+          <p><b>Comment:</b> ${comment}</p>
+          <p><b>Product ID:</b> ${productId}</p>
+          </div>
+      `,
+    });
+    return { success: true, data: response };
+  } catch (error) {
+    console.error(
+      "Notification Service - Resend - sendReviewDeleteEmailByAdmin - Email sending failed:",
+      error,
+    );
+    return { success: false, error };
+  }
+}
+
 module.exports = {
   sendOtpEmail,
   sendProductAddEmail,
@@ -195,4 +222,5 @@ module.exports = {
   sendProductDeleteEmail,
   sendProductStatusUpdateEmailByAdmin,
   sendProductDeleteEmailByAdmin,
+  sendReviewDeleteEmailByAdmin
 };

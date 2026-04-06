@@ -1,5 +1,6 @@
 const { getChannel } = require("../config/rabbitMQ");
 const Product = require("../models/products.model");
+const Review = require("../models/review.model");
 
 const toggleProductStatus = async (req , res) => {
     try {
@@ -63,7 +64,7 @@ const deleteReview = async (req , res) => {
                 message: "Products-Service - Admin Controller - deleteReview - Review not found",
             });
         }
-        await review.remove();
+        await Review.findByIdAndDelete(reviewId);
 
         // publish event to rabbitmq
         const channel = getChannel();

@@ -45,7 +45,7 @@ const getProductById = async (req , res) => {
     }
 };
 
-const searchProducts = async (req, res) => {
+const filterProducts = async (req, res) => {
     try {
         let { brand, category, priceRange, rating, sort, page = 1, limit = 10 } = req.query;
 
@@ -91,8 +91,28 @@ const searchProducts = async (req, res) => {
     }
 };
 
+const searchProducts = async (req, res) => {
+    try {
+        const { query } = req.query;
+        const products = await Product.find({
+            $text: { $search: query }
+        });
+        return res.status(200).json({
+            success: true,
+            data: products,
+            message: "Products Service - Customer Controller - searchProducts - Products searched successfully",
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Products Service - Customer Controller - searchProducts - " + error.message,
+        });
+    }
+};
+
 module.exports = {
     randomProductSuggestion,
     getProductById,
+    filterProducts,
     searchProducts
 };

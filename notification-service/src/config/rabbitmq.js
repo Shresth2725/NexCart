@@ -8,6 +8,11 @@ async function connectRabbitMQWithRetry(retries = 5, delay = 3000) {
       connection = await amqp.connect("amqp://localhost:5672");
       channel = await connection.createChannel();
       await channel.assertQueue("otp_received", { durable: true });
+      await channel.assertQueue("product_added");
+      await channel.assertQueue("product_updated");
+      await channel.assertQueue("product_deleted");
+      await channel.assertQueue("product_deleted_by_admin");
+      await channel.assertQueue("product_status_updated");
       console.log(
         "Notification Service - RabbitMQ - connectRabbitMQWithRetry - Connected to RabbitMQ",
       );
