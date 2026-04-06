@@ -39,6 +39,20 @@ services:
       rabbitmq:
         condition: service_healthy
 
+  products-service:
+    build:
+      context: ./products-service
+    ports:
+      - "3003:3003"
+    env_file:
+      - ./products-service/.env
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq
+      - PORT=3003
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
   api-gateway:
     image: nginx:latest
     container_name: api-gateway
@@ -46,5 +60,6 @@ services:
       - "80:80"
     volumes:
       - ./api-gateway/nginx.conf:/etc/nginx/nginx.conf
+      - ./api-gateway/index.html:/usr/share/nginx/html/index.html
     depends_on:
       - auth-service
