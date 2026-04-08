@@ -53,6 +53,20 @@ services:
       rabbitmq:
         condition: service_healthy
 
+  cart-service:
+    build:
+      context: ./cart-service
+    ports:
+      - "3004:3004"
+    env_file:
+      - ./cart-service/.env
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq
+      - PORT=3004
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
   api-gateway:
     image: nginx:latest
     container_name: api-gateway
