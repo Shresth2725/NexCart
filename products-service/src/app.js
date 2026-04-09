@@ -8,6 +8,7 @@ const cors = require("cors");
 const customerRoute = require("./routes/customer.route");
 const adminRoute = require("./routes/admin.route");
 const reviewRoute = require("./routes/review.route");
+const productRoute = require("./routes/product.route");
 
 const app = express();
 app.use(cors({
@@ -30,6 +31,7 @@ app.use("/seller", sellerRoute);
 app.use("/customer", customerRoute);
 app.use("/admin", adminRoute);
 app.use("/reviews", reviewRoute);
+app.use("/product", productRoute);
 
 app.listen(process.env.PORT, () => {
   console.log(`Products Service is running on port ${process.env.PORT}`);

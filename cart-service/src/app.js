@@ -19,7 +19,7 @@ app.get("/", (req, res) => {
     res.send("Cart Service is running");
 });
 
-app.use("/costumer" , customerCartRouter)
+app.use("/cart" , customerCartRouter)
 
 app.listen(process.env.PORT, () => {
     console.log(`Cart Service is running on port ${process.env.PORT}`);

@@ -1,43 +1,67 @@
 const cartModel = require("../models/cart.model");
+const axios = require("axios");
 
 // correct the message like "Cart Service - addCartItem - Internal server error" to "Cart Service - addCartItem - Internal server error"
 
-const addCartItem = async (req , res) => {
+const addCartItem = async (req, res) => {
     try {
         const userId = req.user.id;
-        const {productId , quantity} = req.body;
-        
+        const { productId, quantity } = req.body;
+
         const cart = await cartModel.findOne({ userId });
 
-        if (!cart) {
-            // create a cart
-            const newCart = new cartModel({
-                userId,
-                items: [{ productId, quantity }],
-                totalPrice: quantity * product.price
-            });
-            await newCart.save();
-            return res.status(201).json({ message: "Cart Service - addCartItem - Cart created successfully", cart: newCart });
+        const response = await axios.get(`http://localhost:3003/product/${productId}`);
+        const product = response.data.product;
+
+        if (!product) {
+            return res.status(404).json({ message: "Cart Service - addCartItem - Product not found" });
         }
 
-        // if cart exists
-        const existingItem = cart.items.find(item => item.productId.toString() === productId);
+        const price = product.price;
+
+        if (!cart) {
+            const newCart = new cartModel({
+                userId,
+                items: [{ productId, quantity, price }],
+                totalPrice: quantity * price
+            });
+
+            await newCart.save();
+            return res.status(201).json({
+                message: "Cart Service - addCartItem - Cart created successfully",
+                cart: newCart
+            });
+        }
+
+        const existingItem = cart.items.find(
+            item => item.productId.toString() === productId
+        );
 
         if (existingItem) {
             existingItem.quantity = quantity;
         } else {
-            cart.items.push({ productId, quantity });
+            cart.items.push({ productId, quantity, price });
         }
 
-        cart.totalPrice = cart.items.reduce((total, item) => total + item.quantity * item.price, 0);
+        cart.totalPrice = cart.items.reduce(
+            (total, item) => total + item.quantity * item.price,
+            0
+        );
+
         await cart.save();
-        return res.status(200).json({ message: "Cart Service - addCartItem - Cart updated successfully", cart });
-        
+
+        return res.status(200).json({
+            message: "Cart Service - addCartItem - Cart updated successfully",
+            cart
+        });
+
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ message: "Cart Service - addCartItem - Internal server error" });
+        return res.status(500).json({
+            message: "Cart Service - addCartItem - Internal server error - " + error.message
+        });
     }
-}
+};
 
 const getCart = async (req , res) => {
     try {
