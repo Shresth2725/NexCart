@@ -4,8 +4,8 @@ let channel, connection;
 async function connectRabbitMQWithRetry(retries = 5, delay = 3000) {
   while (retries) {
     try {
-      connection = await amqp.connect("amqp://localhost:5672")
-      // connection = await amqp.connect("amqp://rabbitmq:5672")
+      // connection = await amqp.connect("amqp://localhost:5672")
+      connection = await amqp.connect(process.env.RABBITMQ_URL);
       channel = await connection.createChannel();
       console.log("Connected to RabbitMQ");
       return;

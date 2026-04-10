@@ -10,7 +10,7 @@ const addCartItem = async (req, res) => {
 
         const cart = await cartModel.findOne({ userId });
 
-        const response = await axios.get(`http://localhost:3003/product/${productId}`);
+        const response = await axios.get(`${process.env.PRODUCTS_SERVICE_URL}/product/${productId}`);
         const product = response.data.product;
 
         if (!product) {
