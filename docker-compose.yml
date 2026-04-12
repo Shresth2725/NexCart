@@ -20,7 +20,7 @@ services:
     env_file:
       - ./auth-service/.env.prod
     environment:
-      - RABBITMQ_URL=amqp://rabbitmq
+      - NODE_ENV=production
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -33,8 +33,7 @@ services:
     env_file:
       - ./notification-service/.env.prod
     environment:
-      - RABBITMQ_URL=amqp://rabbitmq
-      - PORT=3002
+      - NODE_ENV=production
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -47,8 +46,7 @@ services:
     env_file:
       - ./products-service/.env.prod
     environment:
-      - RABBITMQ_URL=amqp://rabbitmq
-      - PORT=3003
+      - NODE_ENV=production
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -61,8 +59,7 @@ services:
     env_file:
       - ./cart-service/.env.prod
     environment:
-      - RABBITMQ_URL=amqp://rabbitmq
-      - PORT=3004
+      - NODE_ENV=production
     depends_on:
       rabbitmq:
         condition: service_healthy

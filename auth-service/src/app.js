@@ -4,7 +4,7 @@ const authRouter = require("./routes/auth.route");
 const {connectRabbitMQWithRetry} = require("./config/rabbitMQ");
 const adminRouter = require("./routes/admin.route");
 const cookieParser = require("cookie-parser");
-require("dotenv").config();
+require("dotenv").config({ path: process.env.NODE_ENV === 'production' ? '.env.prod' : '.env.dev' });
 
 const app = express();
 app.use(cookieParser());

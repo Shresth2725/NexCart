@@ -5,7 +5,7 @@ const { connectRabbitMQWithRetry } = require("./config/rabbitmq");
 const connectDB = require("./config/dbConnect");
 const customerCartRouter = require("./routes/customer.route");
 
-dotenv.config();
+dotenv.config({ path: process.env.NODE_ENV === 'production' ? '.env.prod' : '.env.dev' });
 connectRabbitMQWithRetry();
 connectDB();
 

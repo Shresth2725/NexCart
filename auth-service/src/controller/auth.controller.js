@@ -132,7 +132,7 @@ const login = async (req , res) => {
     }
 
     // generate jwt token
-    const token = jwt.sign({id : user._id, role: user.role, email: user.email , name: user.name, sellerInfo: user.sellerInfo} , process.env.JWT_SECRET , {expiresIn : "24h"});
+    const token = jwt.sign({id : user._id, role: user.role, email: user.email , name: user.name, sellerInfo: user.sellerInfo} , process.env.JWT_SECRET_KEY , {expiresIn : "24h"});
     res.cookie("token" , token , {
       httpOnly : true,
       secure : false,

@@ -7,7 +7,7 @@ const protect = async (req , res , next) => {
     if (!token) {
       return res.status(401).json({message : "Auth-Service - Protect Middleware - protect - Unauthorized"})
     }
-    const decodedToken = jwt.verify(token , process.env.JWT_SECRET);
+    const decodedToken = jwt.verify(token , process.env.JWT_SECRET_KEY);
     const id = decodedToken.id;
     const user = await User.findById(id).select("-password").lean();
     if (!user) {

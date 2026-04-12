@@ -3,7 +3,7 @@ const connectDB = require("./config/dbConnect");
 const sellerRoute = require("./routes/seller.route");
 const { connectRabbitMQWithRetry } = require("./config/rabbitMQ");
 const cookieParser = require("cookie-parser");
-require("dotenv").config();
+require("dotenv").config({ path: process.env.NODE_ENV === 'production' ? '.env.prod' : '.env.dev' });
 const cors = require("cors");
 const customerRoute = require("./routes/customer.route");
 const adminRoute = require("./routes/admin.route");
