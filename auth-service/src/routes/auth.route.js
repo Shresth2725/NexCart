@@ -1,5 +1,5 @@
 const express = require("express");
-const {register, verifyUserOtp, resendOTP, login , logout , getAddresses , addAddress , removeAddress , updateAddress , updatePassword , forgetPassword , updateUser , updateSellerInfo, verifyForgetPasswordOtp, putAddressDefault, me, getUserById} = require("../controller/auth.controller");
+const {register, verifyUserOtp, resendOTP, login , logout , getAddresses , addAddress , removeAddress , updateAddress , updatePassword , forgetPassword , updateUser , updateSellerInfo, verifyForgetPasswordOtp, putAddressDefault, me, getUserById, getAddressById} = require("../controller/auth.controller");
 const {protect} = require("../middleware/protectedRoute");
 
 const authRouter = express.Router();
@@ -9,6 +9,8 @@ authRouter.post("/verifyUserOtp" , verifyUserOtp) // working
 authRouter.post("/resendOTP" , resendOTP) // working
 authRouter.post("/login" , login) // working
 authRouter.post("/logout" , logout) // working
+
+authRouter.get("/user/:userId/address/:addressId" , getAddressById) // working
 
 // protected routes
 authRouter.get("/getAddresses" , protect , getAddresses) // working

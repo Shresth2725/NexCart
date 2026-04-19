@@ -159,6 +159,25 @@ const logout = async (req , res) => {
   }
 }
 
+const getAddressById = async (req , res) => {
+  try {
+    const {userId , addressId} = req.params;
+    if (!userId || !addressId) {
+      return res.status(400).json({message : "Auth-Service - Auth Route - Get Address By Id API - User id and address id are required" , success : false})
+    }
+    const user = await User.findById(userId).lean();
+    if (!user) {
+      return res.status(404).json({message : "Auth-Service - Auth Route - Get Address By Id API - User not found" , success : false})
+    }
+    const address = user.address.id(addressId);
+    if (!address) {
+      return res.status(404).json({message : "Auth-Service - Auth Route - Get Address By Id API - Address not found" , success : false})
+    }
+    return res.status(200).json({message : "Auth-Service - Auth Route - Get Address By Id API - Address fetched successfully" , success : true , address})
+  } catch (error) {
+    res.status(500).json({message : `Auth-Service - Auth Route - Get Address By Id API - ${error.message}` , success : false})
+  }
+}
 
 // protected routes
 
@@ -436,4 +455,4 @@ const getUserById = async (req , res) => {
   }
 }
 
-module.exports = {register , resendOTP , verifyUserOtp , login ,logout , getAddresses , addAddress , removeAddress , updateAddress , updateSellerInfo , updatePassword , updateUser , forgetPassword , verifyForgetPasswordOtp , putAddressDefault , me , getUserById}
+module.exports = {register , resendOTP , verifyUserOtp , login ,logout , getAddresses , addAddress , removeAddress , updateAddress , updateSellerInfo , updatePassword , updateUser , forgetPassword , verifyForgetPasswordOtp , putAddressDefault , me , getUserById , getAddressById}
