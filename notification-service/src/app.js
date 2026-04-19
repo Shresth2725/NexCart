@@ -8,6 +8,7 @@ async function start() {
   
   await startOtpConsumer();
   await startProductConsumer();
+  await startOrderConsumer();
   
   console.log("Notification Service is running and waiting for messages...");
 }

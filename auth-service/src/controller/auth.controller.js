@@ -443,15 +443,15 @@ const getUserById = async (req , res) => {
   try {
     const {id} = req.params;
     if (!id) {
-      return res.status(400).json({message : "Auth-Service - Auth Route - Get User By Id API - User id is required"})
+      return res.status(400).json({message : "Auth-Service - Auth Route - Get User By Id API - User id is required" , success : false})
     }
     const user = await User.findById(id).select("-password");
     if (!user) {
-      return res.status(404).json({message : "Auth-Service - Auth Route - Get User By Id API - User not found"})
+      return res.status(404).json({message : "Auth-Service - Auth Route - Get User By Id API - User not found" , success : false})
     }
-    return res.status(200).json({message : "Auth-Service - Auth Route - Get User By Id API - User fetched successfully" , user})
+    return res.status(200).json({message : "Auth-Service - Auth Route - Get User By Id API - User fetched successfully" , success : true , user})
   } catch (error) {
-    res.status(500).json({message : `Auth-Service - Auth Route - Get User By Id API - ${error.message}`})
+    res.status(500).json({message : `Auth-Service - Auth Route - Get User By Id API - ${error.message}` , success : false})
   }
 }
 

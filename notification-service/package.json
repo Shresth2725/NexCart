@@ -12,6 +12,7 @@
   "type": "commonjs",
   "dependencies": {
     "amqplib": "^0.10.9",
+    "axios": "^1.15.0",
     "dotenv": "^17.3.1",
     "resend": "^6.9.4"
   }

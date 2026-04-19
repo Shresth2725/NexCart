@@ -215,6 +215,62 @@ const sendReviewDeleteEmailByAdmin = async (email, review) => {
   }
 }
 
+const sendOrderCancelledEmail = async (email, order) => {
+  const { orderId, items, totalAmount, shippingAddress, paymentMethod } = order;
+  try {
+    const response = await resend.emails.send({
+      from: "NexCart <onboarding@resend.dev>",
+      to: email,
+      subject: "Order Cancelled",
+      html: `
+        <div style="font-family: Arial, sans-serif;">
+          <h2>Order Cancelled</h2>
+          <p>Your order has been cancelled successfully</p>
+          <p><b>Order ID:</b> ${orderId}</p>
+          <p><b>Total Amount:</b> ₹${totalAmount}</p>
+          <p><b>Shipping Address:</b> ${shippingAddress}</p>
+          <p><b>Payment Method:</b> ${paymentMethod}</p>
+          </div>
+      `,
+    });
+    return { success: true, data: response };
+  } catch (error) {
+    console.error(
+      "Notification Service - Resend - sendOrderCancelledEmail - Email sending failed:",
+      error,
+    );
+    return { success: false, error };
+  }
+}
+
+const sendOrderDeliveredEmail = async (email, order) => {
+  const { orderId, items, totalAmount, shippingAddress, paymentMethod } = order;
+  try {
+    const response = await resend.emails.send({
+      from: "NexCart <onboarding@resend.dev>",
+      to: email,
+      subject: "Order Delivered",
+      html: `
+        <div style="font-family: Arial, sans-serif;">
+          <h2>Order Delivered</h2>
+          <p>Your order has been delivered successfully</p>
+          <p><b>Order ID:</b> ${orderId}</p>
+          <p><b>Total Amount:</b> ₹${totalAmount}</p>
+          <p><b>Shipping Address:</b> ${shippingAddress}</p>
+          <p><b>Payment Method:</b> ${paymentMethod}</p>
+          </div>
+      `,
+    });
+    return { success: true, data: response };
+  } catch (error) {
+    console.error(
+      "Notification Service - Resend - sendOrderDeliveredEmail - Email sending failed:",
+      error,
+    );
+    return { success: false, error };
+  }
+}
+
 module.exports = {
   sendOtpEmail,
   sendProductAddEmail,
@@ -222,5 +278,6 @@ module.exports = {
   sendProductDeleteEmail,
   sendProductStatusUpdateEmailByAdmin,
   sendProductDeleteEmailByAdmin,
-  sendReviewDeleteEmailByAdmin
+  sendReviewDeleteEmailByAdmin,
+  sendOrderCancelledEmail
 };

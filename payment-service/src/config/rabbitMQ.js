@@ -1,33 +1,24 @@
 const amqp = require("amqplib");
-
 let channel, connection;
 
 async function connectRabbitMQWithRetry(retries = 5, delay = 3000) {
   while (retries) {
     try {
+      // connection = await amqp.connect("amqp://localhost:5672")
       connection = await amqp.connect(process.env.RABBITMQ_URL);
       channel = await connection.createChannel();
-      await channel.assertQueue("otp_received", { durable: true });
       await channel.assertQueue("product_added");
       await channel.assertQueue("product_updated");
       await channel.assertQueue("product_deleted");
       await channel.assertQueue("product_deleted_by_admin");
       await channel.assertQueue("product_status_updated");
       await channel.assertQueue("review_deleted", { durable: true });
-      await channel.assertQueue("order_created", { durable: true });
-      await channel.assertQueue("order_cancelled", { durable: true });
-      await channel.assertQueue("order_delivered", { durable: true });
-      await channel.assertQueue("order_added_payment_service", { durable: true });
-      console.log(
-        "Notification Service - RabbitMQ - connectRabbitMQWithRetry - Connected to RabbitMQ",
-      );
+      console.log("Connected to RabbitMQ");
       return;
     } catch (error) {
       retries--;
       if (retries === 0) {
-        throw new Error(
-          "Notification Service - RabbitMQ - connectRabbitMQWithRetry - Failed to connect to RabbitMQ",
-        );
+        throw new Error("Failed to connect to RabbitMQ" + error);
       }
       await new Promise((resolve) => setTimeout(resolve, delay));
     }
@@ -36,11 +27,9 @@ async function connectRabbitMQWithRetry(retries = 5, delay = 3000) {
 
 function getChannel() {
   if (!channel) {
-    throw new Error(
-      "Notification Service - RabbitMQ - getChannel - Channel not initialized",
-    );
+    throw new Error("Channel not initialized");
   }
   return channel;
 }
 
-module.exports = { connectRabbitMQWithRetry, getChannel };
+module.exports = {connectRabbitMQWithRetry , getChannel}
