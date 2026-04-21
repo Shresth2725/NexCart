@@ -7,16 +7,17 @@ async function connectRabbitMQWithRetry(retries = 5, delay = 3000) {
       // connection = await amqp.connect("amqp://localhost:5672")
       connection = await amqp.connect(process.env.RABBITMQ_URL);
       channel = await connection.createChannel();
-      await channel.assertQueue("product_added");
-      await channel.assertQueue("product_updated");
-      await channel.assertQueue("product_deleted");
-      await channel.assertQueue("product_deleted_by_admin");
-      await channel.assertQueue("product_status_updated");
-      await channel.assertQueue("review_deleted", { durable: true });
+      await channel.assertQueue("order_created");
+      await channel.assertQueue("order_updated");
+      await channel.assertQueue("order_deleted");
+      await channel.assertQueue("order_deleted_by_admin");
+      await channel.assertQueue("order_status_updated");
+      await channel.assertQueue("payment.completed");
+      await channel.assertQueue("payment.failed");
       console.log("Connected to RabbitMQ");
       return;
     } catch (error) {
-      retries--;
+      retries--;  
       if (retries === 0) {
         throw new Error("Failed to connect to RabbitMQ" + error);
       }

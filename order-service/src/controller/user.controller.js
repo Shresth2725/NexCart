@@ -29,7 +29,7 @@ const createOrder = async (req, res) => {
   });
 
   const eventPayload = {
-      event: "order.created",
+      event: "order_created",
       data: {
         orderId: order._id,
         userId,
