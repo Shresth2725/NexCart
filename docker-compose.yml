@@ -64,6 +64,32 @@ services:
       rabbitmq:
         condition: service_healthy
 
+  order-service:
+    build:
+      context: ./order-service
+    ports:
+      - "3005:3005"
+    env_file:
+      - ./order-service/.env.prod
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  payment-service:
+    build:
+      context: ./payment-service
+    ports:
+      - "3006:3006"
+    env_file:
+      - ./payment-service/.env.prod
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
   api-gateway:
     image: nginx:latest
     container_name: api-gateway
