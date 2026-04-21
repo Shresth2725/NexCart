@@ -1,7 +1,11 @@
 const express = require("express") ;
 const connectDB = require("./config/dbConnect");
 const cookieParser = require("cookie-parser");
-require("dotenv").config();
+require("dotenv").config({
+  path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
+});
+const { connectRabbitMQWithRetry } = require("./config/rabbitMQ");
+const paymentRouter = require("./routes/payment.route");
 
 const app = express() ;
 
@@ -12,6 +16,7 @@ app.use("/payment" , paymentRouter) ;
 
 
 connectDB();
+connectRabbitMQWithRetry();
 
 app.listen(process.env.PORT , () => {
     console.log(`Payment Service is running on port ${process.env.PORT}`);

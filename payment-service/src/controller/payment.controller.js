@@ -1,7 +1,7 @@
 // controller.js
-const razorpay = require("./config/razorpay");
+const razorpay = require("../config/razorpay");
 const crypto = require("crypto");
-const { getChannel } = require("./rabbit");
+const { getChannel } = require("../config/rabbitMQ");
 const paymentModel = require("../models/payment.model");
 
 const createPayment = async (req, res) => {
@@ -24,7 +24,7 @@ const createPayment = async (req, res) => {
     const rpOrder = await razorpay.orders.create(options);
 
     // save in DB
-    await Payment.create({
+    await paymentModel.create({
       orderId,
       userId,
       amount,
@@ -101,7 +101,7 @@ const verifyPayment = async (req, res) => {
 
       const razorpayOrderId = paymentEntity.order_id;
 
-      await Payment.findOneAndUpdate(
+      await paymentModel.findOneAndUpdate(
         { razorpayOrderId },
         {
           status: "failed",

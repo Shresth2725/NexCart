@@ -2,6 +2,7 @@ require("dotenv").config({ path: process.env.NODE_ENV === 'production' ? '.env.p
 const { connectRabbitMQWithRetry } = require("./config/rabbitmq");
 const { startOtpConsumer } = require("./consumers/otpConsumer");
 const { startProductConsumer } = require("./consumers/productConsumer");
+const { startOrderConsumer } = require("./consumers/orderConsumer");
 
 async function start() {
   await connectRabbitMQWithRetry();
