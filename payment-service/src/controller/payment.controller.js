@@ -80,14 +80,14 @@ const verifyPayment = async (req, res) => {
 
       // send event to RabbitMQ
       const channel = getChannel();
-      await channel.assertQueue("payment.completed");
+      await channel.assertQueue("payment_completed");
 
       channel.sendToQueue(
-        "payment.completed",
+        "payment_completed",
         Buffer.from(
           JSON.stringify({
-            event: "payment.completed",
-            data: { orderId },
+            event: "payment_completed",
+            data: { orderId , email: req.user.email },
           })
         )
       );
@@ -110,13 +110,13 @@ const verifyPayment = async (req, res) => {
       );
 
       const channel = getChannel();
-      await channel.assertQueue("payment.failed");
+      await channel.assertQueue("payment_failed");
 
       channel.sendToQueue(
-        "payment.failed",
+        "payment_failed",
         Buffer.from(
           JSON.stringify({
-            event: "payment.failed",
+            event: "payment_failed",
             data: { orderId: paymentEntity.notes.orderId },
           })
         )

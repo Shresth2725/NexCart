@@ -271,6 +271,62 @@ const sendOrderDeliveredEmail = async (email, order) => {
   }
 }
 
+const sendPaymentSuccessEmail = async (email, order) => {
+  const { _id, items, totalAmount, shippingAddress, paymentMethod } = order;
+  try {
+    const response = await resend.emails.send({
+      from: "NexCart <onboarding@resend.dev>",
+      to: email,
+      subject: "Payment Success",
+      html: `
+        <div style="font-family: Arial, sans-serif;">
+          <h2>Payment Success</h2>
+          <p>Your payment has been processed successfully</p>
+          <p><b>Order ID:</b> ${_id}</p>
+          <p><b>Total Amount:</b> ₹${totalAmount}</p>
+          <p><b>Payment Method:</b> ${paymentMethod}</p>
+          </div>
+      `,
+    });
+    return { success: true, data: response };
+  } catch (error) {
+    console.error(
+      "Notification Service - Resend - sendPaymentSuccessEmail - Email sending failed:",
+      error,
+    );
+    return { success: false, error };
+  }
+}
+
+const sendPaymentFailedEmail = async (email, order) => {
+  const { _id, items, totalAmount, shippingAddress, paymentMethod } = order;
+  try {
+    const response = await resend.emails.send({
+      from: "NexCart <onboarding@resend.dev>",
+      to: email,
+      subject: "Payment Failed",
+      html: `
+        <div style="font-family: Arial, sans-serif;">
+          <h2>Payment Failed</h2>
+          <p>Your payment has failed</p>
+          <p><b>Order ID:</b> ${_id}</p>
+          <p><b>Total Amount:</b> ₹${totalAmount}</p>
+          <p><b>Payment Method:</b> ${paymentMethod}</p>
+          </div>
+      `,
+    });
+    return { success: true, data: response };
+  } catch (error) {
+    console.error(
+      "Notification Service - Resend - sendPaymentFailedEmail - Email sending failed:",
+      error,
+    );
+    return { success: false, error };
+  }
+} 
+
+
+
 module.exports = {
   sendOtpEmail,
   sendProductAddEmail,
@@ -280,5 +336,7 @@ module.exports = {
   sendProductDeleteEmailByAdmin,
   sendReviewDeleteEmailByAdmin,
   sendOrderCancelledEmail,
-  sendOrderDeliveredEmail
+  sendOrderDeliveredEmail,
+  sendPaymentSuccessEmail,
+  sendPaymentFailedEmail
 };
