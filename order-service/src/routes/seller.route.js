@@ -5,7 +5,7 @@ const { getOrders } = require("../controller/seller.controller");
 
 const sellerRouter = express.Router() ; 
 
-sellerRouter.get("/" ,authMiddleware, sellerCheckMiddleware, getOrders);
+sellerRouter.get("/" ,authMiddleware, sellerCheckMiddleware, getOrders); // working
 
 
 

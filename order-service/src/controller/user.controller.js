@@ -1,5 +1,6 @@
 const orderModel = require("../models/order.model");
 const {getChannel} = require("../config/rabbitMQ");
+const axios = require("axios");
 
 const createOrder = async (req, res) => {
   const { items, totalAmount, addressId } = req.body;
@@ -12,11 +13,16 @@ const createOrder = async (req, res) => {
     }
 
     const response = await axios.get(
-    `${process.env.USER_SERVICE_URL}/users/${userId}/address/${addressId}`
+    `${process.env.AUTH_SERVICE_URL}/auth/user/${userId}/address/${addressId}`,
+    {
+      validateStatus: function (status) {
+        return status < 500; // Resolve only if the status code is less than 500
+      }
+    }
     );
 
     if (!response.data.success) {
-      return res.status(400).json({ message: "Address not found" });
+      return res.status(404).json({ message: "Order Service - Create Order API - Address not found" });
     }
 
     const address = response.data.address;
@@ -44,10 +50,10 @@ const createOrder = async (req, res) => {
     Buffer.from(JSON.stringify(eventPayload))
   );
 
-  res.json(order);
+  res.json({message : "Order Service - Create Order API - Order created successfully" , success : true , order});
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Order Service - Create Order API - Internal server error" });
   }
 };
 
@@ -58,7 +64,7 @@ const getOrders = async (req, res) => {
     if (!orders) {
       return res.status(404).json({message : "Order-Service - Order Route - Get Orders API - Orders not found" , success : false})
     }
-    return res.status(200).json({message : "Order-Service - Order Route - Get Orders API - Orders fetched successfully" , success : true , orders})
+    return res.status(200).json({message : "Order-Service - Order Route - Get Orders API - Orders fetched successfully" , success : true , orders , count: orders.length})
   } catch (error) {
     return res.status(500).json({message : `Order-Service - Order Route - Get Orders API - ${error.message}` , success : false})
   }
@@ -89,7 +95,11 @@ const cancelOrder = async (req, res) => {
       return res.status(403).json({message : "Order-Service - Order Route - Cancel Order API - Unauthorized" , success : false})
     }
 
-    if (order.status !== "created") {
+    if (order.status === "cancelled") {
+      return res.status(400).json({message : "Order-Service - Order Route - Cancel Order API - Order already cancelled" , success : false})
+    }
+
+    if (order.status === "delivered") {
       return res.status(400).json({message : "Order-Service - Order Route - Cancel Order API - Order cannot be cancelled" , success : false})
     }
     order.status = "cancelled";

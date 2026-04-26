@@ -1,5 +1,6 @@
 const { getChannel } = require("../config/rabbitmq");
-const { sendOrderCancelledEmail } = require("../services/emailService");
+const { sendOrderCancelledEmail, sendOrderDeliveredEmail } = require("../services/emailService");
+const axios = require("axios");
 
 async function startOrderConsumer() {
     const channel = getChannel();
@@ -8,7 +9,7 @@ async function startOrderConsumer() {
         if (!msg) return;
         try {
             const order = JSON.parse(msg.content.toString());
-            console.log("Notification Service - Order Consumer - startOrderConsumer - Order created" , order);
+            console.log("Notification Service - Order Consumer - startOrderConsumer - Order details" , order);
 
             const user = await axios.get(`${process.env.AUTH_SERVICE_URL}/auth/${order.userId}`);
 
@@ -38,7 +39,7 @@ async function startOrderConsumer() {
         if (!msg) return;
         try {
             const order = JSON.parse(msg.content.toString());
-            console.log("Notification Service - Order Consumer - startOrderConsumer - Order created" , order);
+            console.log("Notification Service - Order Consumer - startOrderConsumer - Order details" , order);
 
             const user = await axios.get(`${process.env.AUTH_SERVICE_URL}/auth/${order.userId}`);
 

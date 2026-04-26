@@ -12,7 +12,7 @@ const addressSchema = new mongoose.Schema({
 
 const itemSchema = new mongoose.Schema({
   productId: { type: String, required: true },
-  sellerId: { type: String, required: true },
+  sellerId: { type: String }, // Required for Seller Controller to query orders
   quantity: { type: Number, required: true },
 });
 

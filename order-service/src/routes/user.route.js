@@ -4,9 +4,9 @@ const { createOrder, getOrders, getOrderById, cancelOrder } = require("../contro
 
 const userRouter = express.Router();
 
-userRouter.post("/", authMiddleware, createOrder);
-userRouter.get("/", authMiddleware, getOrders);
-userRouter.get("/:orderId", getOrderById);
-userRouter.post("/cancel/:orderId" , authMiddleware , cancelOrder);
+userRouter.post("/", authMiddleware, createOrder); // working
+userRouter.get("/", authMiddleware, getOrders); // working
+userRouter.get("/:orderId", getOrderById); // working
+userRouter.post("/cancel/:orderId" , authMiddleware , cancelOrder); // working
 
 module.exports = userRouter;

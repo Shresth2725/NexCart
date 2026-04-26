@@ -15,7 +15,11 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/orders", userRouter);
+app.get("/" , (req , res) => {
+  return res.status(200).json({ message: "Order Service is running" , success: true });
+})
+
+app.use("/user", userRouter);
 app.use("/seller" , sellerRouter);
 app.use("/admin" , adminRouter);
 

@@ -216,7 +216,7 @@ const sendReviewDeleteEmailByAdmin = async (email, review) => {
 }
 
 const sendOrderCancelledEmail = async (email, order) => {
-  const { orderId, items, totalAmount, shippingAddress, paymentMethod } = order;
+  const { _id, items, totalAmount, shippingAddress, paymentMethod } = order;
   try {
     const response = await resend.emails.send({
       from: "NexCart <onboarding@resend.dev>",
@@ -226,9 +226,9 @@ const sendOrderCancelledEmail = async (email, order) => {
         <div style="font-family: Arial, sans-serif;">
           <h2>Order Cancelled</h2>
           <p>Your order has been cancelled successfully</p>
-          <p><b>Order ID:</b> ${orderId}</p>
+          <p><b>Order ID:</b> ${_id}</p>
           <p><b>Total Amount:</b> ₹${totalAmount}</p>
-          <p><b>Shipping Address:</b> ${shippingAddress}</p>
+          <p><b>Shipping Address:</b> ${shippingAddress.fullName}, ${shippingAddress.street}, ${shippingAddress.city}, ${shippingAddress.state}, ${shippingAddress.pincode}, ${shippingAddress.country}</p>
           <p><b>Payment Method:</b> ${paymentMethod}</p>
           </div>
       `,
@@ -244,7 +244,7 @@ const sendOrderCancelledEmail = async (email, order) => {
 }
 
 const sendOrderDeliveredEmail = async (email, order) => {
-  const { orderId, items, totalAmount, shippingAddress, paymentMethod } = order;
+  const { _id, items, totalAmount, shippingAddress, paymentMethod } = order;
   try {
     const response = await resend.emails.send({
       from: "NexCart <onboarding@resend.dev>",
@@ -254,9 +254,9 @@ const sendOrderDeliveredEmail = async (email, order) => {
         <div style="font-family: Arial, sans-serif;">
           <h2>Order Delivered</h2>
           <p>Your order has been delivered successfully</p>
-          <p><b>Order ID:</b> ${orderId}</p>
+          <p><b>Order ID:</b> ${_id}</p>
           <p><b>Total Amount:</b> ₹${totalAmount}</p>
-          <p><b>Shipping Address:</b> ${shippingAddress}</p>
+          <p><b>Shipping Address:</b> ${shippingAddress.fullName}, ${shippingAddress.street}, ${shippingAddress.city}, ${shippingAddress.state}, ${shippingAddress.pincode}, ${shippingAddress.country}</p>
           <p><b>Payment Method:</b> ${paymentMethod}</p>
           </div>
       `,
@@ -279,5 +279,6 @@ module.exports = {
   sendProductStatusUpdateEmailByAdmin,
   sendProductDeleteEmailByAdmin,
   sendReviewDeleteEmailByAdmin,
-  sendOrderCancelledEmail
+  sendOrderCancelledEmail,
+  sendOrderDeliveredEmail
 };

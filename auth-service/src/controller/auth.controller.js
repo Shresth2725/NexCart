@@ -159,7 +159,7 @@ const logout = async (req , res) => {
   }
 }
 
-const getAddressById = async (req , res) => {
+const   getAddressById = async (req , res) => {
   try {
     const {userId , addressId} = req.params;
     if (!userId || !addressId) {
@@ -169,7 +169,7 @@ const getAddressById = async (req , res) => {
     if (!user) {
       return res.status(404).json({message : "Auth-Service - Auth Route - Get Address By Id API - User not found" , success : false})
     }
-    const address = user.address.id(addressId);
+    const address = user.address.find(addr => addr._id.toString() === addressId);
     if (!address) {
       return res.status(404).json({message : "Auth-Service - Auth Route - Get Address By Id API - Address not found" , success : false})
     }
