@@ -26,6 +26,6 @@ app.use("/admin" , adminRouter);
 dbConnect();
 connectRabbitMQWithRetry();
 
-app.listen(process.env.PORT, () => {
+app.listen(process.env.PORT, "0.0.0.0", () => {
   console.log(`Order service is running on port ${process.env.PORT}`);
 });

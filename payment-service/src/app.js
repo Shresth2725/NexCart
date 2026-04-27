@@ -12,12 +12,16 @@ const app = express() ;
 app.use(express.json());
 app.use(cookieParser());
 
+app.get("/" , (req , res) => {
+  res.json({message : "Payment Service is running"});
+})
+
 app.use("/payment" , paymentRouter) ; 
 
 
 connectDB();
 connectRabbitMQWithRetry();
 
-app.listen(process.env.PORT , () => {
+app.listen(process.env.PORT, "0.0.0.0", () => {
     console.log(`Payment Service is running on port ${process.env.PORT}`);
 });
