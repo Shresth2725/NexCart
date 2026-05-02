@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const {getChannel} = require("../config/rabbitMQ");
 const User = require("../models/user.model.js");
 const jwt = require("jsonwebtoken");
+const redisClient = require("../config/redis");
 
 const register = async (req, res) => {
   try {
@@ -185,13 +186,31 @@ const getAddresses = async (req , res) => {
   try {
     const {email} = req.user;
     console.log(req.user);
+    
     if (!email) {
       return res.status(400).json({message : "Auth-Service - Auth Route - Get Addresses API - Email is required"})
     }
+
+    // add cache
+    const cacheKey = JSON.stringify({ email });
+    const cachedUser = await redisClient.get(`user:addresses-${cacheKey}`);
+    if (cachedUser) {
+      return res.status(200).json({
+        success: true,
+        data: JSON.parse(cachedUser),
+        message: "Auth-Service - Auth Route - Get Addresses API - User fetched successfully from cache",
+      });
+    }
+
+
     const user = await User.findOne({email}).lean();
     if (!user) {
       return res.status(404).json({message : "Auth-Service - Auth Route - Get Addresses API - User not found"})
     }
+
+    // set cache
+    await redisClient.set(`user:addresses-${cacheKey}`, JSON.stringify(user), "EX", 3600);
+
     return res.status(200).json({message : "Auth-Service - Auth Route - Get Addresses API - Addresses fetched successfully" , addresses : user.address})
   } catch (error) {
     res.status(500).json({message : `Auth-Service - Auth Route - Get Addresses API - ${error.message}`})
@@ -202,6 +221,10 @@ const putAddressDefault = async (req, res) => {
   try {
     const { email } = req.user;
     const { addressId } = req.params;
+
+    // clear cache
+    const keys = await redisClient.keys("user:*");
+    if (keys.length > 0) await redisClient.del(keys);
 
     if (!email || !addressId) {
       return res.status(400).json({ message: "Auth-Service - Auth Route - Put Address Default API - Email and addressId are required" });
@@ -236,6 +259,11 @@ const addAddress = async (req , res) => {
   try {
     const {email} = req.user;
     const address = req.body;
+
+    // clear cache
+    const keys = await redisClient.keys("user:*");
+    if (keys.length > 0) await redisClient.del(keys);
+
     if (!email || !address) {
       return res.status(400).json({message : "Auth-Service - Auth Route - Add Address API - Email and address are required"})
     }
@@ -260,6 +288,11 @@ const removeAddress = async (req , res) => {
   try {
     const {email } = req.user;
     const {addressId} = req.params;
+    
+    // clear cache
+    const keys = await redisClient.keys("user:*");
+    if (keys.length > 0) await redisClient.del(keys);
+
     if (!email || !addressId) {
       return res.status(400).json({message : "Auth-Service - Auth Route - Remove Address API - Email and addressId are required"})
     }
@@ -279,6 +312,11 @@ const updateAddress = async (req , res) => {
   try {
     const {email} = req.user;
     const address = req.body;
+
+    // clear cache
+    const keys = await redisClient.keys("user:*");
+    if (keys.length > 0) await redisClient.del(keys);
+
     const {addressId} = req.params;
     if (!email || !addressId || !address) {
       return res.status(400).json({message : "Auth-Service - Auth Route - Update Address API - Email , addressId and address are required"})
@@ -298,6 +336,11 @@ const updateUser = async (req , res) => {
   try {
     const {name , phone , role} = req.body;
     const {email} = req.user;
+
+    // clear cache
+    const keys = await redisClient.keys("user:*");
+    if (keys.length > 0) await redisClient.del(keys);
+
     if (!email) {
       return res.status(400).json({message : "Auth-Service - Auth Route - Update User API - Email is required"})
     }
@@ -316,6 +359,11 @@ const updateSellerInfo = async (req , res) => {
   try {
     const {storeName , storeDescription} = req.body;
     const {email} = req.user;
+
+    // clear cache
+    const keys = await redisClient.keys("user:*");
+    if (keys.length > 0) await redisClient.del(keys);
+
     if (!email || !storeName || !storeDescription) {
       return res.status(400).json({message : "Auth-Service - Auth Route - Update Seller Info API - Email , storeName and storeDescription are required"})
     }
@@ -430,9 +478,23 @@ const verifyForgetPasswordOtp = async (req , res) => {
 const me = async (req , res) => {
   try {
     const user = req.user;
+
+    const cacheKey = user.email;
+    const cachedUser = await redisClient.get(`user:${cacheKey}`);
+    if (cachedUser) {
+      return res.status(200).json({
+        success: true,
+        data: JSON.parse(cachedUser),
+        message: "Auth-Service - Auth Route - Me API - User fetched successfully from cache",
+      });
+    }
+
     if (!user) {
       return res.status(404).json({message : "Auth-Service - Auth Route - Me API - User not found"})
     }
+
+    await redisClient.set(`user:${cacheKey}`, JSON.stringify(user), "EX", 3600);
+
     return res.status(200).json({message : "Auth-Service - Auth Route - Me API - User fetched successfully" , user})
   } catch (error) {
     res.status(500).json({message : `Auth-Service - Auth Route - Me API - ${error.message}`})
@@ -442,6 +504,17 @@ const me = async (req , res) => {
 const getUserById = async (req , res) => {
   try {
     const {id} = req.params;
+
+    const cacheKey = JSON.stringify({ id });
+    const cachedUser = await redisClient.get(`user:${cacheKey}`);
+    if (cachedUser) {
+      return res.status(200).json({
+        success: true,
+        data: JSON.parse(cachedUser),
+        message: "Auth-Service - Auth Route - Get User By Id API - User fetched successfully from cache",
+      });
+    }
+
     if (!id) {
       return res.status(400).json({message : "Auth-Service - Auth Route - Get User By Id API - User id is required" , success : false})
     }
@@ -449,6 +522,9 @@ const getUserById = async (req , res) => {
     if (!user) {
       return res.status(404).json({message : "Auth-Service - Auth Route - Get User By Id API - User not found" , success : false})
     }
+
+    await redisClient.set(`user:${cacheKey}`, JSON.stringify(user), "EX", 3600);
+
     return res.status(200).json({message : "Auth-Service - Auth Route - Get User By Id API - User fetched successfully" , success : true , user})
   } catch (error) {
     res.status(500).json({message : `Auth-Service - Auth Route - Get User By Id API - ${error.message}` , success : false})

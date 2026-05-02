@@ -24,6 +24,8 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+      redis:
+        condition: service_healthy
 
   notification-service:
     build:
@@ -50,6 +52,8 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+      redis:
+        condition: service_healthy
 
   cart-service:
     build:
@@ -62,6 +66,8 @@ services:
       - NODE_ENV=production
     depends_on:
       rabbitmq:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
   order-service:
@@ -89,6 +95,18 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   api-gateway:
     image: nginx:latest

@@ -1,8 +1,12 @@
 const productsModel = require("../models/products.model");
 const { getChannel } = require("../config/rabbitMQ");
+const redisClient = require("../config/redis");
 
 const createProduct = async (req, res) => {
     try {
+
+        
+
         const { name, description, price, category, brand, stock } = req.body;
 
         if(!name || !description || !price || !category || !brand || !stock) {
@@ -44,6 +48,11 @@ const getProducts = async (req, res) => {
 
 const updateProduct = async (req, res) => {
     try {
+
+        // clear  cache
+        const keys = await redisClient.keys("product:*");
+        if (keys.length > 0) await redisClient.del(keys);
+
         const { id } = req.params;
         const { name, description, price, category, brand, stock } = req.body;
         const product = await productsModel.findByIdAndUpdate(id, {
@@ -71,6 +80,11 @@ const updateProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
     try {
         const { id } = req.params;
+
+        // clear  cache
+        const keys = await redisClient.keys("product:*");
+        if (keys.length > 0) await redisClient.del(keys);
+
         if (!id) {
             return res.status(400).json({ message: "Products-Service - Seller Route - Delete Product API - Product ID is required" });
         }

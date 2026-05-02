@@ -1,4 +1,5 @@
 const Product = require("../models/products.model");
+const redisClient = require("../config/redis");
 
 const randomProductSuggestion = async (req, res) => {
     try {
@@ -25,13 +26,23 @@ const randomProductSuggestion = async (req, res) => {
 const getProductById = async (req , res) => {
     try {
         const productId = req.params.id;
+        const cachedProduct = await redisClient.get(`product:${productId}`);
+        if (cachedProduct) {
+            return res.status(200).json({
+                success: true,
+                data: JSON.parse(cachedProduct),
+                message: "Products-Service - Customer Controller - getProductById - Product fetched successfully from cache",
+            });
+        }
         const product = await Product.findById(productId);
         if(!product){
             return res.status(404).json({
                 success: false,
-                message: "Products Service - Customer Controller - getProductById - Product not found",
+                message: "Products-Service - Customer Controller - getProductById - Product not found",
             });
         }
+        await redisClient.setEx(`product:${productId}`, 3600, JSON.stringify(product));
+
         return res.status(200).json({
             success: true,
             data: product,
@@ -48,6 +59,18 @@ const getProductById = async (req , res) => {
 const filterProducts = async (req, res) => {
     try {
         let { brand, category, priceRange, rating, sort, page = 1, limit = 10 } = req.query;
+
+
+        const cacheKey = JSON.stringify({ brand, category, priceRange, rating, sort, page, limit });
+        const cachedProduct = await redisClient.get(`product:${cacheKey}`);
+        if (cachedProduct) {
+            return res.status(200).json({
+                success: true,
+                data: JSON.parse(cachedProduct),
+                message: "Products-Service - Customer Controller - filterProducts - Products fetched successfully from cache",
+            });
+        }
+
 
         // convert types
         page = parseInt(page);
@@ -77,6 +100,8 @@ const filterProducts = async (req, res) => {
             .skip((page - 1) * limit)
             .limit(limit);
 
+        await redisClient.setEx(`product:${cacheKey}`, 3600, JSON.stringify(products));
+
         return res.status(200).json({
             success: true,
             data: products,
@@ -94,9 +119,30 @@ const filterProducts = async (req, res) => {
 const searchProducts = async (req, res) => {
     try {
         const { query } = req.query;
+
+        const cacheKey = JSON.stringify({ query });
+        const cachedProduct = await redisClient.get(`product:${cacheKey}`);
+        if (cachedProduct) {
+            return res.status(200).json({
+                success: true,
+                data: JSON.parse(cachedProduct),
+                message: "Products-Service - Customer Controller - searchProducts - Products fetched successfully from cache",
+            });
+        }
+
         const products = await Product.find({
             $text: { $search: query }
         });
+
+        if (!products) {
+            return res.status(404).json({
+                success: false,
+                message: "Products-Service - Customer Controller - searchProducts - No products found",
+            });
+        }
+
+        await redisClient.setEx(`product:${cacheKey}`, 3600, JSON.stringify(products));
+
         return res.status(200).json({
             success: true,
             data: products,
