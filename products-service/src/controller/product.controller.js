@@ -9,7 +9,7 @@ const getProductById = async (req , res) => {
         if (cachedProduct) {
             return res.status(200).json({
                 success: true,
-                data: JSON.parse(cachedProduct),
+                product: JSON.parse(cachedProduct),
                 message: "Products-Service - Product Route - Get Product By ID API - Product fetched successfully from cache",
             });
         }

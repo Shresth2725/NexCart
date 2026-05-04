@@ -195,13 +195,13 @@ const getAddresses = async (req , res) => {
     const cacheKey = JSON.stringify({ email });
     const cachedUser = await redisClient.get(`user:addresses-${cacheKey}`);
     if (cachedUser) {
+      const userObj = JSON.parse(cachedUser);
       return res.status(200).json({
         success: true,
-        data: JSON.parse(cachedUser),
+        addresses: userObj.address,
         message: "Auth-Service - Auth Route - Get Addresses API - User fetched successfully from cache",
       });
     }
-
 
     const user = await User.findOne({email}).lean();
     if (!user) {

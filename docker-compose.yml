@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   rabbitmq:
     image: rabbitmq:3-management
@@ -121,3 +119,6 @@ services:
       - notification-service
       - products-service
       - cart-service
+
+volumes:
+  redis_data:

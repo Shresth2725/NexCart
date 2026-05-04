@@ -28,6 +28,7 @@ const addCartItem = async (req, res) => {
             });
 
             await newCart.save();
+            await redisClient.del(`cart:${userId}`);
             return res.status(201).json({
                 message: "Cart Service - addCartItem - Cart created successfully",
                 cart: newCart
@@ -50,6 +51,7 @@ const addCartItem = async (req, res) => {
         );
 
         await cart.save();
+        await redisClient.del(`cart:${userId}`);
 
         return res.status(200).json({
             message: "Cart Service - addCartItem - Cart updated successfully",
@@ -107,7 +109,7 @@ const updateCartItem = async (req , res) => {
         await cart.save();
 
         // set in redis
-        await redisClient.setEx(`cart:${userId}`, 60 * 60 * 24, JSON.stringify(cart));
+        await redisClient.del(`cart:${userId}`);
 
         return res.status(200).json({ message: "Cart Service - updateCartItem - Cart updated successfully", cart });
     } catch (error) {
@@ -137,7 +139,7 @@ const deleteCartItem = async (req , res) => {
         await cart.save();
 
         // set in redis
-        await redisClient.setEx(`cart:${userId}`, 60 * 60 * 24, JSON.stringify(cart));
+        await redisClient.del(`cart:${userId}`);
         return res.status(200).json({ message: "Cart Service - deleteCartItem - Cart updated successfully", cart });
     } catch (error) {
         console.log(error);

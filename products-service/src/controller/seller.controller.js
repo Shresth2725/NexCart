@@ -5,7 +5,9 @@ const redisClient = require("../config/redis");
 const createProduct = async (req, res) => {
     try {
 
-        
+        // clear  cache
+        const keys = await redisClient.keys("product:*");
+        if (keys.length > 0) await redisClient.del(keys);
 
         const { name, description, price, category, brand, stock } = req.body;
 

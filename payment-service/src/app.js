@@ -1,6 +1,7 @@
 const express = require("express") ;
 const connectDB = require("./config/dbConnect");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 require("dotenv").config({
   path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
 });
@@ -9,6 +10,10 @@ const paymentRouter = require("./routes/payment.route");
 
 const app = express() ;
 
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
 app.use(express.json());
 app.use(cookieParser());
 

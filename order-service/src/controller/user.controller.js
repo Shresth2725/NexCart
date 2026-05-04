@@ -116,4 +116,24 @@ const cancelOrder = async (req, res) => {
   }
 }
 
-module.exports = { createOrder , getOrders , getOrderById , cancelOrder };
+module.exports = { createOrder , getOrders , getOrderById , cancelOrder , updatePaymentStatus };
+
+async function updatePaymentStatus(req, res) {
+  try {
+    const { orderId, paymentStatus } = req.body;
+    if (!orderId || !paymentStatus) {
+      return res.status(400).json({ message: "orderId and paymentStatus are required", success: false });
+    }
+    const order = await orderModel.findByIdAndUpdate(
+      orderId,
+      { paymentStatus },
+      { new: true }
+    );
+    if (!order) {
+      return res.status(404).json({ message: "Order not found", success: false });
+    }
+    return res.status(200).json({ message: "Payment status updated", success: true, order });
+  } catch (error) {
+    return res.status(500).json({ message: `updatePaymentStatus - ${error.message}`, success: false });
+  }
+}

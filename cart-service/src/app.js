@@ -1,6 +1,7 @@
 const express = require("express");
 const cookieParser = require("cookie-parser")
 const dotenv = require("dotenv");
+const cors = require("cors");
 const { connectRabbitMQWithRetry } = require("./config/rabbitmq");
 const connectDB = require("./config/dbConnect");
 const customerCartRouter = require("./routes/customer.route");
@@ -11,6 +12,10 @@ connectDB();
 
 const app = express();
 
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

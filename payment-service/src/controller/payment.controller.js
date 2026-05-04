@@ -3,6 +3,7 @@ const razorpay = require("../config/razorpay");
 const crypto = require("crypto");
 const { getChannel } = require("../config/rabbitMQ");
 const paymentModel = require("../models/payment.model");
+const axios = require("axios");
 
 const createPayment = async (req, res) => {
   try {
@@ -134,4 +135,71 @@ const verifyPayment = async (req, res) => {
   }
 };
 
-module.exports = {createPayment , verifyPayment}
+const verifyClientPayment = async (req, res) => {
+  try {
+    const { razorpay_payment_id, razorpay_order_id, razorpay_signature, orderId } = req.body;
+
+    if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature || !orderId) {
+      return res.status(400).json({ message: "Missing required fields", success: false });
+    }
+
+    // Verify signature
+    const secret = process.env.RAZORPAY_KEY_SECRET;
+    const generatedSignature = crypto
+      .createHmac("sha256", secret)
+      .update(razorpay_order_id + "|" + razorpay_payment_id)
+      .digest("hex");
+
+    if (generatedSignature !== razorpay_signature) {
+      // Update payment as failed
+      await paymentModel.findOneAndUpdate(
+        { razorpayOrderId: razorpay_order_id },
+        { status: "failed", failureReason: "Signature verification failed" }
+      );
+      return res.status(400).json({ message: "Payment verification failed", success: false });
+    }
+
+    // Update payment as completed
+    await paymentModel.findOneAndUpdate(
+      { razorpayOrderId: razorpay_order_id },
+      {
+        status: "completed",
+        transactionId: razorpay_payment_id,
+        razorpaySignature: razorpay_signature,
+      }
+    );
+
+    // Update order paymentStatus via order-service
+    try {
+      await axios.post(
+        `${process.env.ORDER_SERVICE_URL || 'http://order-service:3005'}/user/updatePaymentStatus`,
+        { orderId, paymentStatus: "completed" }
+      );
+    } catch (orderErr) {
+      console.log("Failed to update order payment status:", orderErr.message);
+    }
+
+    // Send event to RabbitMQ
+    try {
+      const channel = getChannel();
+      await channel.assertQueue("payment_completed");
+      channel.sendToQueue(
+        "payment_completed",
+        Buffer.from(JSON.stringify({
+          event: "payment_completed",
+          data: { orderId, email: req.user.email },
+        }))
+      );
+    } catch (mqErr) {
+      console.log("RabbitMQ event failed:", mqErr.message);
+    }
+
+    res.json({ success: true, message: "Payment verified and completed" });
+
+  } catch (error) {
+    console.log("Client Payment Verify Error:", error);
+    res.status(500).json({ message: "Payment verification internal error", success: false });
+  }
+};
+
+module.exports = {createPayment , verifyPayment , verifyClientPayment}

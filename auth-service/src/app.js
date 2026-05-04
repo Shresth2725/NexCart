@@ -4,9 +4,14 @@ const authRouter = require("./routes/auth.route");
 const {connectRabbitMQWithRetry} = require("./config/rabbitMQ");
 const adminRouter = require("./routes/admin.route");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 require("dotenv").config({ path: process.env.NODE_ENV === 'production' ? '.env.prod' : '.env.dev' });
 
 const app = express();
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
 app.use(cookieParser());
 
 const start = async () => {

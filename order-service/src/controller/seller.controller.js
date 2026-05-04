@@ -3,7 +3,7 @@ const Order = require("../models/order.model");
 const getOrders = async (req , res) => {
     try {
         const sellerId = req.user.userId;
-        const orders = await Order.find({ "items.sellerId": sellerId });
+        const orders = await Order.find({ "items.sellerId": sellerId , isPaid: true }).sort({ createdAt: -1 });
         
         if(!orders || orders.length === 0){
             return res.status(404).json({ message: "Order-Service - Seller Controller - getOrders - Orders not found" , success: false});
