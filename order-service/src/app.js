@@ -24,6 +24,17 @@ app.get("/" , (req , res) => {
   return res.status(200).json({ message: "Order Service is running" , success: true });
 })
 
+app.get("/health", (req, res) => {
+  const mongoose = require("mongoose");
+  const dbStatus = mongoose.connection.readyState === 1 ? "Connected" : "Disconnected";
+  res.status(dbStatus === "Connected" ? 200 : 503).json({
+    status: "UP",
+    service: "order-service",
+    database: dbStatus,
+    timestamp: new Date().toISOString()
+  });
+});
+
 app.use("/user", userRouter);
 app.use("/seller" , sellerRouter);
 app.use("/admin" , adminRouter);

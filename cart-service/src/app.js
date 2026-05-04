@@ -24,9 +24,19 @@ app.get("/", (req, res) => {
     res.send("Cart Service is running");
 });
 
+app.get("/health", (req, res) => {
+  const mongoose = require("mongoose");
+  const dbStatus = mongoose.connection.readyState === 1 ? "Connected" : "Disconnected";
+  res.status(dbStatus === "Connected" ? 200 : 503).json({
+    status: "UP",
+    service: "cart-service",
+    database: dbStatus,
+    timestamp: new Date().toISOString()
+  });
+});
+
 app.use("/cart" , customerCartRouter)
 
 app.listen(process.env.PORT, () => {
     console.log(`Cart Service is running on port ${process.env.PORT}`);
 });
-

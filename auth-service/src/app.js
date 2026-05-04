@@ -26,6 +26,17 @@ app.get("/" , (req , res) => {
   res.send("Auth service is running");
 })
 
+app.get("/health", (req, res) => {
+  const mongoose = require("mongoose");
+  const dbStatus = mongoose.connection.readyState === 1 ? "Connected" : "Disconnected";
+  res.status(dbStatus === "Connected" ? 200 : 503).json({
+    status: "UP",
+    service: "auth-service",
+    database: dbStatus,
+    timestamp: new Date().toISOString()
+  });
+});
+
 app.use("/auth" , authRouter)
 app.use("/admin" , adminRouter)
 

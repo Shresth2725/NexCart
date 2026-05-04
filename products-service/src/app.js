@@ -27,6 +27,17 @@ app.get("/", (req, res) => {
   res.send("Products Service is running");
 });
 
+app.get("/health", (req, res) => {
+  const mongoose = require("mongoose");
+  const dbStatus = mongoose.connection.readyState === 1 ? "Connected" : "Disconnected";
+  res.status(dbStatus === "Connected" ? 200 : 503).json({
+    status: "UP",
+    service: "products-service",
+    database: dbStatus,
+    timestamp: new Date().toISOString()
+  });
+});
+
 app.use("/seller", sellerRoute);
 app.use("/customer", customerRoute);
 app.use("/admin", adminRoute);

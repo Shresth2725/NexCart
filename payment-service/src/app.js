@@ -21,6 +21,17 @@ app.get("/" , (req , res) => {
   res.json({message : "Payment Service is running"});
 })
 
+app.get("/health", (req, res) => {
+  const mongoose = require("mongoose");
+  const dbStatus = mongoose.connection.readyState === 1 ? "Connected" : "Disconnected";
+  res.status(dbStatus === "Connected" ? 200 : 503).json({
+    status: "UP",
+    service: "payment-service",
+    database: dbStatus,
+    timestamp: new Date().toISOString()
+  });
+});
+
 app.use("/payment" , paymentRouter) ; 
 
 
