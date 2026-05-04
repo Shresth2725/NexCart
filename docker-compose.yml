@@ -136,6 +136,12 @@ services:
       timeout: 5s
       retries: 3
 
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:80"
+
   api-gateway:
     image: nginx:latest
     container_name: api-gateway
@@ -146,17 +152,19 @@ services:
       - ./api-gateway/index.html:/usr/share/nginx/html/index.html
     depends_on:
       auth-service:
-        condition: service_healthy
+        condition: service_started
       notification-service:
-        condition: service_healthy
+        condition: service_started
       products-service:
-        condition: service_healthy
+        condition: service_started
       cart-service:
-        condition: service_healthy
+        condition: service_started
       order-service:
-        condition: service_healthy
+        condition: service_started
       payment-service:
-        condition: service_healthy
+        condition: service_started
+      frontend:
+        condition: service_started
 
 volumes:
   redis_data:

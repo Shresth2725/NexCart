@@ -179,42 +179,177 @@ const PasswordTab = () => {
 const AddressesTab = () => {
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newAddress, setNewAddress] = useState({
+    street: '',
+    city: '',
+    state: '',
+    pincode: '',
+    country: 'India'
+  });
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   const fetchAddresses = async () => {
     try {
-      const res = await api.get('/auth/getAddresses');
+      const res = await api.get('/auth/auth/getAddresses');
       setAddresses(res.data.addresses || []);
-    } catch {}
+    } catch (err) {
+      console.error('Failed to fetch addresses:', err);
+    }
     setLoading(false);
   };
 
   useEffect(() => { fetchAddresses(); }, []);
 
-  if (loading) return <Loader2 className="animate-spin mx-auto h-10 w-10 text-indigo-600" />;
+  const handleAddAddress = async (e) => {
+    e.preventDefault();
+    setSubmitLoading(true);
+    try {
+      await api.post('/auth/auth/addAddress', newAddress);
+      await fetchAddresses();
+      setShowAddForm(false);
+      setNewAddress({ street: '', city: '', state: '', pincode: '', country: 'India' });
+    } catch (err) {
+      alert('Failed to add address');
+    }
+    setSubmitLoading(false);
+  };
+
+  const handleDeleteAddress = async (addressId) => {
+    if (!window.confirm('Are you sure you want to delete this address?')) return;
+    try {
+      await api.post(`/authauth/removeAddress/${addressId}`);
+      await fetchAddresses();
+    } catch (err) {
+      alert('Failed to delete address');
+    }
+  };
+
+  if (loading) return <div className="flex justify-center p-12"><Loader2 className="animate-spin h-10 w-10 text-indigo-600" /></div>;
 
   return (
     <div className="space-y-6">
-        <h2 className="text-xl font-black dark:text-white">Saved Addresses</h2>
-        {addresses.length === 0 ? (
-            <div className="text-center py-10 bg-gray-50 dark:bg-gray-900/50 rounded-3xl border-2 border-dashed border-gray-200 dark:border-gray-700">
-                <MapPin className="mx-auto text-gray-300 h-10 w-10 mb-2" />
-                <p className="text-gray-500">No saved addresses found.</p>
-            </div>
-        ) : (
-            <div className="grid gap-4">
-            {addresses.map(addr => (
-                <div key={addr._id} className="p-5 rounded-2xl bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-700 flex justify-between items-center group hover:border-indigo-500 transition-all">
-                    <div>
-                        <p className="font-bold dark:text-white">{addr.street}</p>
-                        <p className="text-sm text-gray-500">{addr.city}, {addr.state} - {addr.pincode}</p>
-                    </div>
-                    <button className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all opacity-0 group-hover:opacity-100">
-                        <Trash2 size={18} />
-                    </button>
-                </div>
-            ))}
-            </div>
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-black dark:text-white">Your Addresses</h2>
+        {!showAddForm && (
+          <button 
+            onClick={() => setShowAddForm(true)}
+            className="text-sm font-black text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
+          >
+            + Add New
+          </button>
         )}
+      </div>
+
+      {showAddForm ? (
+        <form onSubmit={handleAddAddress} className="bg-gray-50 dark:bg-gray-900/50 p-6 rounded-3xl border border-gray-100 dark:border-gray-700 space-y-4 animate-in fade-in zoom-in-95 duration-300">
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1 block">Street Address</label>
+              <input
+                required
+                value={newAddress.street}
+                onChange={e => setNewAddress({...newAddress, street: e.target.value})}
+                placeholder="e.g. 123 Luxury Lane"
+                className="w-full p-3 rounded-2xl bg-white dark:bg-gray-800 border-none outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1 block">City</label>
+                <input
+                  required
+                  value={newAddress.city}
+                  onChange={e => setNewAddress({...newAddress, city: e.target.value})}
+                  className="w-full p-3 rounded-2xl bg-white dark:bg-gray-800 border-none outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1 block">State</label>
+                <input
+                  required
+                  value={newAddress.state}
+                  onChange={e => setNewAddress({...newAddress, state: e.target.value})}
+                  className="w-full p-3 rounded-2xl bg-white dark:bg-gray-800 border-none outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1 block">Pincode</label>
+                <input
+                  required
+                  value={newAddress.pincode}
+                  onChange={e => setNewAddress({...newAddress, pincode: e.target.value})}
+                  className="w-full p-3 rounded-2xl bg-white dark:bg-gray-800 border-none outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1 block">Country</label>
+                <input
+                  required
+                  value={newAddress.country}
+                  onChange={e => setNewAddress({...newAddress, country: e.target.value})}
+                  className="w-full p-3 rounded-2xl bg-white dark:bg-gray-800 border-none outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white"
+                />
+              </div>
+            </div>
+          </div>
+          <div className="flex gap-3 pt-2">
+            <button 
+              type="submit"
+              disabled={submitLoading}
+              className="flex-1 bg-indigo-600 text-white py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-indigo-700 transition-all flex justify-center items-center gap-2"
+            >
+              {submitLoading ? <Loader2 className="animate-spin h-5 w-5" /> : 'Save Address'}
+            </button>
+            <button 
+              type="button"
+              onClick={() => setShowAddForm(false)}
+              className="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-gray-300 dark:hover:bg-gray-600 transition-all"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      ) : (
+        <>
+          {addresses.length === 0 ? (
+            <div className="text-center py-12 bg-gray-50 dark:bg-gray-900/50 rounded-3xl border-2 border-dashed border-gray-200 dark:border-gray-700">
+              <MapPin className="mx-auto text-gray-300 h-12 w-12 mb-3" />
+              <p className="text-gray-500 font-medium">No saved addresses yet.</p>
+              <button 
+                onClick={() => setShowAddForm(true)}
+                className="mt-4 text-indigo-600 font-bold hover:underline"
+              >
+                Add your first address
+              </button>
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {addresses.map(addr => (
+                <div key={addr._id} className="p-5 rounded-2xl bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-700 flex justify-between items-center group hover:border-indigo-500 hover:shadow-md transition-all duration-300">
+                  <div className="flex gap-4 items-center">
+                    <div className="w-10 h-10 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center text-indigo-600 shadow-sm">
+                      <MapPin size={20} />
+                    </div>
+                    <div>
+                      <p className="font-bold text-gray-900 dark:text-white">{addr.street}</p>
+                      <p className="text-sm text-gray-500 font-medium">{addr.city}, {addr.state} - {addr.pincode}</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => handleDeleteAddress(addr._id)}
+                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all opacity-0 group-hover:opacity-100"
+                  >
+                    <Trash2 size={20} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };

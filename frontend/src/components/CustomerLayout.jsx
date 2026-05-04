@@ -19,6 +19,9 @@ import {
   X
 } from 'lucide-react';
 
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchCart } from '../store/slices/cartSlice';
+
 const SidebarLink = ({ active, icon, label, onClick }) => (
   <button 
     onClick={onClick}
@@ -39,13 +42,19 @@ const CustomerLayout = ({ children, sidebarContent, onSearch, searchQuery, setSe
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
+  const { items } = useSelector(state => state.cart);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  React.useEffect(() => {
+    dispatch(fetchCart());
+  }, [dispatch]);
 
   const isActive = (path) => location.pathname === path;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex font-sans">
-      {/* Sidebar - Desktop */}
+      {/* ... (Sidebar remains the same) ... */}
       <aside className="w-64 bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-800 flex flex-col hidden lg:flex fixed h-full z-20">
         <div className="p-6">
           <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-500 cursor-pointer" onClick={() => navigate('/home')}>
@@ -143,9 +152,11 @@ const CustomerLayout = ({ children, sidebarContent, onSearch, searchQuery, setSe
                 </button>
                 <div className="relative cursor-pointer group p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all" onClick={() => navigate('/cart')}>
                     <ShoppingCart className="h-5 w-5 text-gray-500 group-hover:text-indigo-600" />
-                    <span className="absolute top-1 right-1 w-4 h-4 bg-indigo-600 text-white text-[8px] font-black flex items-center justify-center rounded-full border-2 border-white dark:border-gray-900">
-                        2
-                    </span>
+                    {items.length > 0 && (
+                      <span className="absolute top-1 right-1 w-4 h-4 bg-indigo-600 text-white text-[8px] font-black flex items-center justify-center rounded-full border-2 border-white dark:border-gray-900">
+                          {items.length}
+                      </span>
+                    )}
                 </div>
             </div>
             <div className="relative cursor-pointer p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all hidden sm:block">

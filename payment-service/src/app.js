@@ -11,7 +11,7 @@ const paymentRouter = require("./routes/payment.route");
 const app = express() ;
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: ["http://localhost:8080", "http://localhost:3000"],
   credentials: true
 }));
 app.use(express.json());

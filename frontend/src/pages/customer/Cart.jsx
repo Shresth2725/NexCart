@@ -1,16 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import api from '../../api/axios';
-import { Trash2, Minus, Plus, ShoppingBag, Package, Loader2, ArrowRight, MapPin, CreditCard, ShieldCheck } from 'lucide-react';
-import CustomerLayout from '../../components/CustomerLayout';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchCart } from '../../store/slices/cartSlice';
 
 const Cart = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
 
-  const [cart, setCart] = useState(null);
+  const { items, totalPrice, loading: cartLoading } = useSelector(state => state.cart);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [updatingItem, setUpdatingItem] = useState(null);
@@ -23,37 +20,16 @@ const Cart = () => {
   const [orderMsg, setOrderMsg] = useState('');
   const [showCheckout, setShowCheckout] = useState(false);
 
-  // Add address form
-  const [showAddressForm, setShowAddressForm] = useState(false);
-  const [newAddress, setNewAddress] = useState({
-    fullName: '', phone: '', street: '', city: '', state: '', pincode: '', country: 'India'
-  });
-
   useEffect(() => {
-    fetchCart();
+    dispatch(fetchCart()).finally(() => setLoading(false));
     fetchAddresses();
-  }, []);
+  }, [dispatch]);
 
-  useEffect(() => {
-    if (searchParams.get('checkout') === 'true' && cart && cart.items?.length > 0) {
-      setShowCheckout(true);
-    }
-  }, [cart, searchParams]);
-
-  const fetchCart = async () => {
-    try {
-      const res = await api.get('/cart/cart/');
-      setCart(res.data.cart);
-    } catch (err) {
-      if (err.response?.status === 404) setCart(null);
-      else setError(err.response?.data?.message || 'Failed to load cart');
-    }
-    setLoading(false);
-  };
+  const cart = { items, totalPrice }; // Mocking original cart structure for minimal refactor
 
   const fetchAddresses = async () => {
     try {
-      const res = await api.get('/auth/getAddresses');
+      const res = await api.get('/auth/auth/getAddresses');
       const addrs = res.data.addresses || [];
       setAddresses(addrs);
       const defaultAddr = addrs.find(a => a.isDefault);
@@ -67,7 +43,7 @@ const Cart = () => {
     setUpdatingItem(productId);
     try {
       await api.put('/cart/cart/update', { productId, quantity: newQuantity });
-      await fetchCart();
+      await dispatch(fetchCart());
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to update quantity');
     }
@@ -78,7 +54,7 @@ const Cart = () => {
     setUpdatingItem(productId);
     try {
       await api.delete('/cart/cart/delete', { data: { productId } });
-      await fetchCart();
+      await dispatch(fetchCart());
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to remove item');
     }
@@ -88,7 +64,7 @@ const Cart = () => {
   const handleAddAddress = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/auth/addAddress', newAddress);
+      await api.post('/auth/auth/addAddress', newAddress);
       setShowAddressForm(false);
       setNewAddress({ fullName: '', phone: '', street: '', city: '', state: '', pincode: '', country: 'India' });
       await fetchAddresses();

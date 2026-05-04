@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import api from '../api/axios';
+import { useDispatch } from 'react-redux';
+import { setLogin, setLogout, updateUser as updateAuthRedux } from '../store/slices/authSlice';
 
 const AuthContext = createContext(null);
 
@@ -7,6 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -17,42 +18,17 @@ export const AuthProvider = ({ children }) => {
         const parsedUser = JSON.parse(storedUser);
         setUser(parsedUser);
         setRole(parsedUser.role || 'customer');
+        dispatch(setLogin({ user: parsedUser, token }));
       } catch (e) {
         console.error("Failed to parse stored user", e);
       }
     }
     setLoading(false);
-  }, []);
-
-  const register = async (userData) => {
-    try {
-      // payload: { name, email, password, role }
-      const response = await api.post('/auth/auth/register', userData);
-      return { success: true, data: response.data };
-    } catch (error) {
-      return { 
-        success: false, 
-        message: error.response?.data?.message || 'Registration failed' 
-      };
-    }
-  };
-
-  const verifyOtp = async (email, otp) => {
-    try {
-      const response = await api.post('/auth/auth/verifyUserOtp', { email, otp });
-      return { success: true, data: response.data };
-    } catch (error) {
-      return { 
-        success: false, 
-        message: error.response?.data?.message || 'OTP Verification failed' 
-      };
-    }
-  };
+  }, [dispatch]);
 
   const login = async (email, password) => {
     try {
       const response = await api.post('/auth/auth/login', { email, password });
-      // response.data should have { message, user, token }
       const { user: userData, token } = response.data;
       
       localStorage.setItem('token', token);
@@ -60,6 +36,7 @@ export const AuthProvider = ({ children }) => {
       
       setUser(userData);
       setRole(userData.role);
+      dispatch(setLogin({ user: userData, token }));
       
       return { success: true, role: userData.role };
     } catch (error) {
@@ -80,11 +57,17 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem('user');
       setUser(null);
       setRole(null);
+      dispatch(setLogout());
     }
   };
 
+  const updateUser = (data) => {
+    setUser(prev => ({ ...prev, ...data }));
+    dispatch(updateAuthRedux(data));
+  };
+
   return (
-    <AuthContext.Provider value={{ user, role, loading, register, verifyOtp, login, logout }}>
+    <AuthContext.Provider value={{ user, role, loading, register: async (d) => api.post('/auth/auth/register', d), verifyOtp: async (e, o) => api.post('/auth/auth/verifyUserOtp', { email: e, otp: o }), login, logout, setUser: updateUser }}>
       {children}
     </AuthContext.Provider>
   );
