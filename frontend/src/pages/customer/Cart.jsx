@@ -1,3 +1,9 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import api from '../../api/axios';
+import { Trash2, Minus, Plus, ShoppingBag, Package, Loader2, ArrowRight, MapPin, CreditCard, ShieldCheck } from 'lucide-react';
+import CustomerLayout from '../../components/CustomerLayout';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchCart } from '../../store/slices/cartSlice';
 

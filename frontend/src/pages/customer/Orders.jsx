@@ -14,28 +14,18 @@ import {
 import { useNavigate } from 'react-router-dom';
 import CustomerLayout from '../../components/CustomerLayout';
 
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchOrders } from '../../store/slices/ordersSlice';
+
 const Orders = () => {
   const navigate = useNavigate();
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const { list: orders, loading } = useSelector(state => state.orders);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    fetchOrders();
-  }, []);
-
-  const fetchOrders = async () => {
-    try {
-      const res = await api.get('/order/user');
-      const sorted = (res.data.orders || []).sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      );
-      setOrders(sorted);
-    } catch (err) {
-      console.error("Failed to fetch orders", err);
-    }
-    setLoading(false);
-  };
+    dispatch(fetchOrders());
+  }, [dispatch]);
 
   const getStatusIcon = (status) => {
     switch (status) {
