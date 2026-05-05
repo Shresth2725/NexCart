@@ -86,9 +86,9 @@ pipeline {
                 echo 'Deploying app...'
 
                 sh '''
-                docker-compose pull
-                docker-compose down
-                docker-compose up -d
+                docker compose pull
+                docker compose down
+                docker compose up -d
                 '''
             }
         }
