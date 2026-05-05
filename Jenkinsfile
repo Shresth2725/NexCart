@@ -30,7 +30,7 @@ pipeline {
                         dir(service) {
                             echo "Building ${service}..."
 
-                            sh 'npm install'
+                            // sh 'npm install'
 
                             sh """
                             docker build \
