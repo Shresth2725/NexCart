@@ -13,7 +13,7 @@ pipeline {
             }
         }
 
-        stage('Build Services') {
+        stage('Build & Tag Images') {
             steps {
                 script {
                     def services = [
@@ -30,12 +30,11 @@ pipeline {
                         dir(service) {
                             echo "Building ${service}..."
 
-                            // sh 'npm install'
-
                             sh """
                             docker build \
                             -t ${DOCKERHUB_USER}/${service}:latest \
-                            -t ${DOCKERHUB_USER}/${service}:${BUILD_NUMBER} .
+                            -t ${DOCKERHUB_USER}/${service}:${BUILD_NUMBER} \
+                            .
                             """
                         }
                     }
@@ -43,7 +42,21 @@ pipeline {
             }
         }
 
-        stage('Login & Push Images') {
+        stage('Login to DockerHub') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: '2725',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh '''
+                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    '''
+                }
+            }
+        }
+
+        stage('Push Images') {
             steps {
                 script {
                     def services = [
@@ -56,32 +69,27 @@ pipeline {
                         'frontend'
                     ]
 
-                    withCredentials([usernamePassword(
-                        credentialsId: '2725',
-                        usernameVariable: 'DOCKER_USER',
-                        passwordVariable: 'DOCKER_PASS'
-                    )]) {
+                    for (service in services) {
+                        echo "Pushing ${service}..."
 
-                        sh "echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin"
-
-                        for (service in services) {
-                            echo "Pushing ${service}..."
-
-                            sh """
-                            docker push ${DOCKERHUB_USER}/${service}:latest
-                            docker push ${DOCKERHUB_USER}/${service}:${BUILD_NUMBER}
-                            """
-                        }
+                        sh """
+                        docker push ${DOCKERHUB_USER}/${service}:latest
+                        docker push ${DOCKERHUB_USER}/${service}:${BUILD_NUMBER}
+                        """
                     }
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy (Docker Compose)') {
             steps {
                 echo 'Deploying app...'
-                sh 'docker-compose down'
-                sh 'docker-compose up -d'
+
+                sh '''
+                docker-compose pull
+                docker-compose down
+                docker-compose up -d
+                '''
             }
         }
     }
@@ -91,10 +99,10 @@ pipeline {
             cleanWs()
         }
         success {
-            echo 'Done successfully!'
+            echo 'Pipeline executed successfully 🚀'
         }
         failure {
-            echo 'Something failed, check logs.'
+            echo 'Pipeline failed ❌ check logs'
         }
     }
 }
