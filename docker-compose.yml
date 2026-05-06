@@ -4,6 +4,7 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+
     healthcheck:
       test: rabbitmq-diagnostics -q ping
       interval: 10s
@@ -12,10 +13,13 @@ services:
 
   redis:
     image: redis:latest
+
     ports:
       - "6379:6379"
+
     volumes:
       - redis_data:/data
+
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -25,17 +29,25 @@ services:
   auth-service:
     build:
       context: ./auth-service
+
+    image: shresth2725/auth-service:latest
+
     ports:
       - "3001:3001"
+
     env_file:
       - ./auth-service/.env.prod
+
     environment:
       - NODE_ENV=production
+
     depends_on:
       rabbitmq:
         condition: service_healthy
+
       redis:
         condition: service_healthy
+
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
       interval: 10s
@@ -45,15 +57,22 @@ services:
   notification-service:
     build:
       context: ./notification-service
+
+    image: shresth2725/notification-service:latest
+
     ports:
       - "3002:3002"
+
     env_file:
       - ./notification-service/.env.prod
+
     environment:
       - NODE_ENV=production
+
     depends_on:
       rabbitmq:
         condition: service_healthy
+
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
       interval: 10s
@@ -63,17 +82,25 @@ services:
   products-service:
     build:
       context: ./products-service
+
+    image: shresth2725/products-service:latest
+
     ports:
       - "3003:3003"
+
     env_file:
       - ./products-service/.env.prod
+
     environment:
       - NODE_ENV=production
+
     depends_on:
       rabbitmq:
         condition: service_healthy
+
       redis:
         condition: service_healthy
+
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3003/health"]
       interval: 10s
@@ -83,17 +110,25 @@ services:
   cart-service:
     build:
       context: ./cart-service
+
+    image: shresth2725/cart-service:latest
+
     ports:
       - "3004:3004"
+
     env_file:
       - ./cart-service/.env.prod
+
     environment:
       - NODE_ENV=production
+
     depends_on:
       rabbitmq:
         condition: service_healthy
+
       redis:
         condition: service_healthy
+
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3004/health"]
       interval: 10s
@@ -103,15 +138,22 @@ services:
   order-service:
     build:
       context: ./order-service
+
+    image: shresth2725/order-service:latest
+
     ports:
       - "3005:3005"
+
     env_file:
       - ./order-service/.env.prod
+
     environment:
       - NODE_ENV=production
+
     depends_on:
       rabbitmq:
         condition: service_healthy
+
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3005/health"]
       interval: 10s
@@ -121,15 +163,22 @@ services:
   payment-service:
     build:
       context: ./payment-service
+
+    image: shresth2725/payment-service:latest
+
     ports:
       - "3006:3006"
+
     env_file:
       - ./payment-service/.env.prod
+
     environment:
       - NODE_ENV=production
+
     depends_on:
       rabbitmq:
         condition: service_healthy
+
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3006/health"]
       interval: 10s
@@ -139,37 +188,44 @@ services:
   frontend:
     build:
       context: ./frontend
+
+    image: shresth2725/frontend:latest
+
     ports:
       - "3000:80"
 
   api-gateway:
-  build: ./api-gateway
-  image: shresth2725/api-gateway:latest
-  container_name: api-gateway
-  ports:
-    - "80:80"
+    build:
+      context: ./api-gateway
 
-  depends_on:
-    auth-service:
-      condition: service_started
+    image: shresth2725/api-gateway:latest
 
-    notification-service:
-      condition: service_started
+    container_name: api-gateway
 
-    products-service:
-      condition: service_started
+    ports:
+      - "80:80"
 
-    cart-service:
-      condition: service_started
+    depends_on:
+      auth-service:
+        condition: service_started
 
-    order-service:
-      condition: service_started
+      notification-service:
+        condition: service_started
 
-    payment-service:
-      condition: service_started
+      products-service:
+        condition: service_started
 
-    frontend:
-      condition: service_started
+      cart-service:
+        condition: service_started
+
+      order-service:
+        condition: service_started
+
+      payment-service:
+        condition: service_started
+
+      frontend:
+        condition: service_started
 
 volumes:
   redis_data:
