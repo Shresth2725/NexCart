@@ -16,6 +16,7 @@ pipeline {
         stage('Build & Tag Images') {
             steps {
                 script {
+
                     def services = [
                         'auth-service',
                         'notification-service',
@@ -27,7 +28,9 @@ pipeline {
                     ]
 
                     for (service in services) {
+
                         dir(service) {
+
                             echo "Building ${service}..."
 
                             sh """
@@ -44,13 +47,19 @@ pipeline {
 
         stage('Login to DockerHub') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: '2725',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
+
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: '2725',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )
+                ]) {
+
                     sh '''
-                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    echo "$DOCKER_PASS" | docker login \
+                    -u "$DOCKER_USER" \
+                    --password-stdin
                     '''
                 }
             }
@@ -58,7 +67,9 @@ pipeline {
 
         stage('Push Images') {
             steps {
+
                 script {
+
                     def services = [
                         'auth-service',
                         'notification-service',
@@ -70,6 +81,7 @@ pipeline {
                     ]
 
                     for (service in services) {
+
                         echo "Pushing ${service}..."
 
                         sh """
@@ -83,24 +95,47 @@ pipeline {
 
         stage('Deploy (Docker Compose)') {
             steps {
+
                 echo 'Deploying app...'
 
-                sh '''
-                docker compose pull
-                docker compose down
-                docker compose up -d
-                '''
+                withCredentials([
+
+                    file(credentialsId: 'auth-env', variable: 'AUTH_ENV'),
+                    file(credentialsId: 'payment-env', variable: 'PAYMENT_ENV'),
+                    file(credentialsId: 'cart-env', variable: 'CART_ENV'),
+                    file(credentialsId: 'notification-env', variable: 'NOTIFICATION_ENV'),
+                    file(credentialsId: 'order-env', variable: 'ORDER_ENV'),
+                    file(credentialsId: 'product-env', variable: 'PRODUCT_ENV')
+
+                ]) {
+
+                    sh '''
+                    cp $AUTH_ENV auth-service/.env.prod
+                    cp $PAYMENT_ENV payment-service/.env.prod
+                    cp $CART_ENV cart-service/.env.prod
+                    cp $NOTIFICATION_ENV notification-service/.env.prod
+                    cp $ORDER_ENV order-service/.env.prod
+                    cp $PRODUCT_ENV products-service/.env.prod
+
+                    docker compose down
+                    docker compose pull
+                    docker compose up -d
+                    '''
+                }
             }
         }
     }
 
     post {
+
         always {
             cleanWs()
         }
+
         success {
             echo 'Pipeline executed successfully 🚀'
         }
+
         failure {
             echo 'Pipeline failed ❌ check logs'
         }
