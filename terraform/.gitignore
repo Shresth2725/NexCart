@@ -1,0 +1,14 @@
+# Local .terraform directories
+.terraform/
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# .tfvars files (sensitive data)
+*.tfvars
+*.tfvars.json
+
+# Lock file (optional to ignore, but often ignored in local dev)
+.terraform.lock.hcl
+.terraform.tfstate.lock.info    

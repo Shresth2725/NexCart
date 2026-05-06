@@ -1,0 +1,16 @@
+- hosts: workers
+  become: yes
+
+  tasks:
+
+    - name: Join workers to cluster
+      shell: |
+        {{ hostvars['master']['kube_join_command'] }}
+      args:
+        creates: /etc/kubernetes/kubelet.conf
+
+    - name: Label worker node
+      delegate_to: master
+      become: yes
+      shell: |
+        kubectl label node {{ inventory_hostname }} node-role.kubernetes.io/worker=worker --overwrite
