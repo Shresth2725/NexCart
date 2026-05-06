@@ -149,4 +149,13 @@ The project includes a `Jenkinsfile` that automates:
 - **Stateless Architecture**: Ensures the platform can scale horizontally without session affinity issues.
 
 ---
+
+## 🔮 Future Updates & Roadmap
+- [ ] **Full Kubernetes Deployment**: Transition from Docker Compose to native K8s manifests (Deployments, Services, Ingress).
+- [ ] **ArgoCD Integration**: Implement GitOps for automated, declarative continuous delivery to Kubernetes.
+- [ ] **Service Mesh**: Explore Istio or Linkerd for advanced traffic management and observability.
+- [ ] **Monitoring & Logging**: Integrate Prometheus, Grafana, and ELK stack.
+
+---
 Developed with ❤️ by [Shresth](https://github.com/shresth2725)
+
