@@ -24,7 +24,8 @@ pipeline {
                         'cart-service',
                         'order-service',
                         'payment-service',
-                        'frontend'
+                        'frontend',
+                        'api-gateway'
                     ]
 
                     for (service in services) {
@@ -77,7 +78,8 @@ pipeline {
                         'cart-service',
                         'order-service',
                         'payment-service',
-                        'frontend'
+                        'frontend',
+                        'api-gateway'
                     ]
 
                     for (service in services) {
