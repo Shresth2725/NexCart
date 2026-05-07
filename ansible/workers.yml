@@ -5,12 +5,13 @@
 
     - name: Join workers to cluster
       shell: |
-        {{ hostvars['master']['kube_join_command'] }}
+        {{ hostvars['k8s-master']['kube_join_command'] }}
       args:
         creates: /etc/kubernetes/kubelet.conf
 
     - name: Label worker node
-      delegate_to: master
+      delegate_to: k8s-master
       become: yes
+      become_user: ubuntu
       shell: |
-        kubectl label node {{ inventory_hostname }} node-role.kubernetes.io/worker=worker --overwrite
+        kubectl label node {{ ansible_hostname }} node-role.kubernetes.io/worker=worker --overwrite
