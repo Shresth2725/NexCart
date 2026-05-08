@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: payment-service-svc
+  namespace: nexcart
+
+spec:
+  selector:
+    app: payment-service
+
+  ports:
+    - protocol: TCP
+      port: 3006
+      targetPort: 3006
+
+  type: ClusterIP

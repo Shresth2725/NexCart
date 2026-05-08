@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: cart-service-deployment
+  namespace: nexcart
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: cart-service
+
+  template:
+    metadata:
+      labels:
+        app: cart-service
+
+    spec:
+      containers:
+        - name: cart-service
+          image: shresth2725/cart-service:latest
+
+          envFrom:
+            - secretRef:
+                name: cart-secret
+
+          ports:
+            - containerPort: 3004

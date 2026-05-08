@@ -1,0 +1,2 @@
+# ignore all yml files except configmap
+secret.yml
