@@ -127,6 +127,16 @@ cd ansible
 ansible-playbook site.yml -i inventory.ini
 ```
 
+### Kubernetes Deployment
+Deploy the microservices to the cluster:
+```bash
+# Create namespace
+kubectl apply -f kubernetes/namespaces/namespace.yml
+
+# Apply all manifests recursively
+kubectl apply -f kubernetes/ -R
+```
+
 ### CI/CD Pipeline
 The project includes a `Jenkinsfile` that automates:
 1. **Code Checkout**: Fetches the latest code from SCM.
@@ -151,7 +161,8 @@ The project includes a `Jenkinsfile` that automates:
 ---
 
 ## 🔮 Future Updates & Roadmap
-- [ ] **Full Kubernetes Deployment**: Transition from Docker Compose to native K8s manifests (Deployments, Services, Ingress).
+- [x] **Kubernetes Manifests**: Generated native K8s manifests (Deployments, Services, Ingress) for all microservices.
+- [ ] **K8s CI/CD Integration**: Update Jenkins pipeline to deploy to Kubernetes instead of Docker Compose.
 - [ ] **ArgoCD Integration**: Implement GitOps for automated, declarative continuous delivery to Kubernetes.
 - [ ] **Service Mesh**: Explore Istio or Linkerd for advanced traffic management and observability.
 - [ ] **Monitoring & Logging**: Integrate Prometheus, Grafana, and ELK stack.
