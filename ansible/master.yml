@@ -37,3 +37,31 @@
     - name: Save join command
       set_fact:
         kube_join_command: "{{ join_command.stdout }}"
+
+    - name: Install git
+      apt:
+        name: git
+        state: present
+        update_cache: yes
+
+    - name: Clone NexCart repository
+      become_user: ubuntu
+      git:
+        repo: 'https://github.com/Shresth2725/NexCart.git'
+        dest: /home/ubuntu/NexCart
+        update: yes
+
+    - name: Copy secret files to master node
+      copy:
+        src: "../kubernetes/{{ item }}/secret.yml"
+        dest: "/home/ubuntu/NexCart/kubernetes/{{ item }}/secret.yml"
+        owner: ubuntu
+        group: ubuntu
+        mode: '0600'
+      loop:
+        - auth-service
+        - cart-service
+        - notification-service
+        - order-service
+        - payment-service
+        - product-service
