@@ -154,9 +154,11 @@ pipeline {
 
                             sh """
                             kubectl set image deployment/${service}-deployment \
-                            ${service}=${DOCKERHUB_USER}/${service}:${BUILD_NUMBER}
+                            ${service}=${DOCKERHUB_USER}/${service}:${BUILD_NUMBER} \
+                            -n nexcart
 
-                            kubectl rollout status deployment/${service}-deployment
+                            kubectl rollout status deployment/${service}-deployment \
+                            -n nexcart
                             """
                         }
                     }
