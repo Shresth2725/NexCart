@@ -140,12 +140,12 @@ pipeline {
                         def services = [
                             'auth-service',
                             'notification-service',
-                            'products-service',
+                            'product-service',
                             'cart-service',
                             'order-service',
                             'payment-service',
                             'frontend',
-                            'api-gateway'
+                            'gateway'
                         ]
 
                         for (service in services) {
@@ -153,8 +153,10 @@ pipeline {
                             echo "Deploying ${service}..."
 
                             sh """
-                            kubectl set image deployment/${service} \
+                            kubectl set image deployment/${service}-deployment \
                             ${service}=${DOCKERHUB_USER}/${service}:${BUILD_NUMBER}
+
+                            kubectl rollout status deployment/${service}-deployment
                             """
                         }
                     }
