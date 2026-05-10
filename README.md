@@ -1,47 +1,65 @@
-# 🛒 NexCart: High-Performance Ecommerce Microservices
+# 🛒 NexCart — Microservices E-Commerce Platform
 
-NexCart is a state-of-the-art, scalable e-commerce platform built with a microservices architecture. It features a unified frontend portal with high-end aesthetics and a robust, event-driven backend ecosystem.
+NexCart is a production-grade, scalable e-commerce platform built on a microservices architecture. It features a premium React frontend, an event-driven Node.js backend, and a fully automated CI/CD pipeline deploying to Kubernetes on AWS.
 
 ---
 
 ## 🏗️ Architecture Overview
 
-NexCart is designed for high availability and horizontal scalability. Each service is independent, own its database, and communicates via synchronous REST APIs or asynchronous messaging.
+NexCart is designed for high availability and horizontal scalability. Each service is independently deployable, owns its own database, and communicates via synchronous REST APIs or asynchronous messaging through RabbitMQ.
 
 ```mermaid
 graph TD
-    Client[Web Browser / Mobile] --> AGW[API Gateway]
-    
-    subgraph "Frontend Layer"
-        AGW --> FE[React Unified Portal]
-    end
+    Client[Web Browser] --> Ingress[K8s Ingress]
 
-    subgraph "Microservices Layer"
-        AGW --> Auth[Auth Service]
-        AGW --> Prod[Product Service]
-        AGW --> Cart[Cart Service]
-        AGW --> Order[Order Service]
-        AGW --> Pay[Payment Service]
-        
-        Auth --> Redis[(Redis Cache)]
+    subgraph "Kubernetes Cluster — nexcart namespace"
+        Ingress --> AGW[API Gateway — Nginx]
+        AGW --> FE[Frontend — React SPA]
+
+        AGW --> Auth[Auth Service :3001]
+        AGW --> Prod[Products Service :3003]
+        AGW --> Cart[Cart Service :3004]
+        AGW --> Order[Order Service :3005]
+        AGW --> Pay[Payment Service :3006]
+
+        Auth --> Redis[(Redis)]
         Prod --> Redis
         Cart --> Redis
-    end
 
-    subgraph "Async Messaging"
         Auth -- Events --> RMQ[RabbitMQ]
         Prod -- Events --> RMQ
         Order -- Events --> RMQ
-        RMQ --> Notif[Notification Service]
+        RMQ --> Notif[Notification Service :3002]
     end
 
-    subgraph "Storage Layer"
-        Auth --> ADB[(MongoDB)]
-        Prod --> PDB[(MongoDB)]
-        Cart --> CDB[(MongoDB)]
-        Order --> ODB[(MongoDB)]
-        Pay --> PYDB[(MongoDB)]
+    subgraph "External Storage"
+        Auth --> ADB[(MongoDB Atlas)]
+        Prod --> PDB[(MongoDB Atlas)]
+        Cart --> CDB[(MongoDB Atlas)]
+        Order --> ODB[(MongoDB Atlas)]
+        Pay --> PYDB[(MongoDB Atlas)]
     end
+```
+
+---
+
+## 📁 Project Structure
+
+```
+NexCart/
+├── api-gateway/            # Nginx-based API gateway
+├── auth-service/           # Authentication & user management
+├── products-service/       # Product catalog & management
+├── cart-service/           # Shopping cart
+├── order-service/          # Order processing & history
+├── payment-service/        # Payment processing
+├── notification-service/   # Email/SMS notifications (RabbitMQ consumer)
+├── frontend/               # React + Vite SPA
+├── kubernetes/             # K8s manifests (Deployments, Services, Secrets, Ingress)
+├── terraform/              # AWS infrastructure provisioning (IaC)
+├── ansible/                # K8s cluster setup & configuration
+├── docker-compose.yml      # Local development orchestration
+└── Jenkinsfile             # CI/CD pipeline definition
 ```
 
 ---
@@ -49,124 +67,147 @@ graph TD
 ## 🚀 Tech Stack
 
 ### Frontend
-- **React 18** with **Vite** for blazing fast builds.
-- **Redux Toolkit** for sophisticated state management (Auth, Cart, Orders).
-- **Vanilla CSS** with modern UI patterns (Glassmorphism, Micro-animations).
-- **React Router** for seamless SPA navigation.
+| Technology | Purpose |
+|---|---|
+| React 18 + Vite | Fast builds & HMR |
+| Redux Toolkit | Global state management (Auth, Cart, Orders) |
+| React Router | Client-side routing |
+| Vanilla CSS | Modern UI — Glassmorphism, micro-animations |
 
 ### Backend
-- **Node.js & Express**: Core framework for all microservices.
-- **MongoDB**: Distributed database layer with one DB per service.
-- **Redis**: High-speed caching for products, sessions, and performance optimization.
-- **RabbitMQ**: Message broker for asynchronous event-driven communication (e.g., OTPs, Order updates).
-- **JWT**: Secure stateless authentication.
+| Technology | Purpose |
+|---|---|
+| Node.js + Express | Microservice runtime |
+| MongoDB (Atlas) | Per-service database |
+| Redis | Caching (products, sessions) |
+| RabbitMQ | Async event-driven messaging |
+| JWT | Stateless authentication |
+| Cloudinary | Image hosting (Product Service) |
 
 ### Infrastructure & DevOps
-- **Terraform**: Infrastructure as Code (IaC) to provision AWS EC2 clusters.
-- **Ansible**: Automated configuration management for Kubernetes cluster setup.
-- **Kubernetes (K8s)**: Orchestration for production-grade reliability.
-- **Docker & Docker Compose**: Containerization for local development and CI/CD.
-- **Jenkins**: Automated CI/CD pipeline (Build -> Test -> Push -> Deploy).
+| Technology | Purpose |
+|---|---|
+| Terraform | AWS EC2 provisioning (IaC) |
+| Ansible | Automated K8s cluster bootstrap |
+| Kubernetes | Production orchestration (2 replicas per service) |
+| Docker | Containerization |
+| Jenkins | CI/CD — Build → Push → Deploy to K8s |
+| Nginx | API Gateway & frontend serving |
 
 ---
 
-## 🧩 Microservices Deep-Dive
+## 🧩 Microservices
 
-### 1. Auth Service
-- Secure user registration, login, and profile management.
-- JWT-based authentication with Redis-backed session awareness.
-- Triggers OTP verification via Notification Service.
-
-### 2. Product Service
-- Comprehensive product management (CRUD) for Sellers.
-- Advanced filtering, searching, and sorting for Customers.
-- Image management via Cloudinary integration.
-
-### 3. Cart Service
-- High-performance shopping cart management.
-- Real-time synchronization across devices using Redis caching.
-
-### 4. Order Service
-- Complex checkout flow handling.
-- Order history tracking and status management (Pending, Shipped, Delivered).
-
-### 5. Payment Service
-- Secure transaction processing.
-- Integrated with external payment gateways.
-
-### 6. Notification Service
-- Asynchronous processing of emails and SMS.
-- Consumer for RabbitMQ events from all other services.
-
-### 7. API Gateway
-- Central entry point for all client requests.
-- Handles routing, global middleware, and request rate limiting.
+| # | Service | Port | Description |
+|---|---|---|---|
+| 1 | **Auth Service** | 3001 | Registration, login, JWT auth, OTP via RabbitMQ |
+| 2 | **Notification Service** | 3002 | Async email/SMS processing (RabbitMQ consumer) |
+| 3 | **Products Service** | 3003 | Product CRUD, search, filtering, Cloudinary images |
+| 4 | **Cart Service** | 3004 | Shopping cart with Redis-backed sync |
+| 5 | **Order Service** | 3005 | Checkout flow, order history & status tracking |
+| 6 | **Payment Service** | 3006 | Secure transaction processing |
+| 7 | **API Gateway** | 80 | Nginx reverse proxy, routing, rate limiting |
+| 8 | **Frontend** | 80 | React SPA served via Nginx |
 
 ---
 
-## 🛠️ Infrastructure & Deployment
+## 🛠️ Getting Started
+
+### Prerequisites
+- Docker & Docker Compose
+- Node.js 20+
+- kubectl (for K8s deployment)
 
 ### Local Development
-Run the entire ecosystem locally using Docker Compose:
 ```bash
+# Start the full stack locally
 docker compose up --build
 ```
 
 ### Infrastructure Provisioning (AWS)
-Provision the server cluster using Terraform:
 ```bash
 cd terraform
 terraform init
 terraform apply
 ```
 
-### Cluster Setup
-Configure the Kubernetes cluster using Ansible:
+### Kubernetes Cluster Setup
 ```bash
 cd ansible
 ansible-playbook site.yml -i inventory.ini
 ```
 
 ### Kubernetes Deployment
-Deploy the microservices to the cluster:
 ```bash
-# Create namespace
+# Create the namespace
 kubectl apply -f kubernetes/namespaces/namespace.yml
 
-# Apply all manifests recursively
+# Deploy all services
 kubectl apply -f kubernetes/ -R
 ```
 
-### CI/CD Pipeline
-The project includes a `Jenkinsfile` that automates:
-1. **Code Checkout**: Fetches the latest code from SCM.
-2. **Build & Tag**: Creates Docker images for all services.
-3. **Registry Push**: Pushes versioned images to DockerHub.
-4. **Automated Deployment**: Deploys the latest stable build using Docker Compose/K8s.
+---
+
+## ⚙️ CI/CD Pipeline
+
+The Jenkins pipeline (`Jenkinsfile`) automates the full delivery lifecycle:
+
+```mermaid
+graph LR
+    A[Checkout Code] --> B[Build & Tag Docker Images]
+    B --> C[Login to DockerHub]
+    C --> D[Push Images — latest + build number]
+    D --> E[Deploy to Kubernetes]
+    E --> F[Rolling Update — Zero Downtime]
+```
+
+### Pipeline Stages
+
+| Stage | Description |
+|---|---|
+| **Checkout** | Pulls latest code from GitHub |
+| **Build & Tag** | Builds Docker images for all 8 services, tagged with `latest` and build number |
+| **Push** | Pushes all images to DockerHub (`shresth2725/*`) |
+| **Deploy** | Rolling update via `kubectl set image` + `kubectl rollout status` in `nexcart` namespace |
+
+### Services Deployed
+- `auth-service`, `notification-service`, `products-service`, `cart-service`, `order-service`, `payment-service`, `frontend`, `api-gateway`
+
+Each K8s deployment runs **2 replicas** with rolling update strategy for zero-downtime deployments.
 
 ---
 
 ## 🔐 Security
-- **Data Protection**: Sensitive information is never stored in plain text.
-- **API Security**: Gateway-level JWT verification ensures only authorized requests reach internal services.
-- **Environment Management**: Secure handling of secrets via `.env` files and CI/CD credentials.
+
+- **JWT Authentication** — Stateless, gateway-level token verification.
+- **Secrets Management** — K8s Secrets for environment variables; `.env` files excluded via `.gitignore`.
+- **Credential Isolation** — Jenkins manages DockerHub and Kubeconfig credentials securely.
+- **Network Isolation** — Services communicate internally within the K8s cluster; only the Ingress/Gateway is externally exposed.
 
 ---
 
-## 📈 Performance Optimization
-- **Redis Caching**: Drastically reduces DB load for frequent read operations.
-- **Optimized Frontend**: Lazy loading of components and efficient asset management via Vite.
-- **Stateless Architecture**: Ensures the platform can scale horizontally without session affinity issues.
+## 📈 Performance
+
+- **Redis Caching** — Reduces MongoDB load for frequent reads (products, sessions, cart).
+- **Async Messaging** — RabbitMQ decouples heavy operations (notifications, events).
+- **Optimized Frontend** — Vite code-splitting, lazy loading, and Nginx static serving.
+- **Horizontal Scaling** — Stateless services scale independently via K8s replica sets.
 
 ---
 
-## 🔮 Future Updates & Roadmap
-- [x] **Kubernetes Manifests**: Generated native K8s manifests (Deployments, Services, Ingress) for all microservices.
-- [ ] **K8s CI/CD Integration**: Update Jenkins pipeline to deploy to Kubernetes instead of Docker Compose.
-- [ ] **ArgoCD Integration**: Implement GitOps for automated, declarative continuous delivery to Kubernetes.
-- [ ] **Service Mesh**: Explore Istio or Linkerd for advanced traffic management and observability.
-- [ ] **Monitoring & Logging**: Integrate Prometheus, Grafana, and ELK stack.
+## 🔮 Roadmap
+
+- [x] Microservices architecture with event-driven messaging
+- [x] Containerized with Docker & Docker Compose
+- [x] Kubernetes manifests (Deployments, Services, Secrets, Ingress)
+- [x] Terraform IaC for AWS infrastructure
+- [x] Ansible automation for K8s cluster setup
+- [x] Jenkins CI/CD pipeline with K8s deployment
+- [ ] ArgoCD — GitOps-based continuous delivery
+- [ ] Monitoring — Prometheus + Grafana dashboards
+- [ ] Logging — ELK stack (Elasticsearch, Logstash, Kibana)
+- [ ] Service Mesh — Istio/Linkerd for traffic management & observability
 
 ---
-Developed with ❤️ by [Shresth](https://github.com/shresth2725)
 
+Developed with ❤️ by [Shresth](https://github.com/Shresth2725)

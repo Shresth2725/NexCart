@@ -136,11 +136,6 @@ pipeline {
                 ]) {
 
                     script {
-
-                        // Map: k8s deployment/container name -> docker image name
-                        // Most services have matching names, except product-service
-                        // K8s deployment: product-service-deployment, container: product-service
-                        // Docker image: products-service (matches the directory name)
                         def deployments = [
                             [k8sName: 'auth-service',         imageName: 'auth-service'],
                             [k8sName: 'notification-service', imageName: 'notification-service'],
