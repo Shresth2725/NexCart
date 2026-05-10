@@ -61,7 +61,7 @@ const CustomerLayout = ({ children, sidebarContent, onSearch, searchQuery, setSe
             <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-600/20">
               <ShoppingBag className="h-5 w-5" />
             </div>
-            <span className="text-xl font-black tracking-tight uppercase">NexCart-Devops</span>
+            <span className="text-xl font-black tracking-tight uppercase">NexCart</span>
           </div>
         </div>
 
