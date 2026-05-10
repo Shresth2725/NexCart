@@ -137,27 +137,31 @@ pipeline {
 
                     script {
 
-                        def services = [
-                            'auth-service',
-                            'notification-service',
-                            'product-service',
-                            'cart-service',
-                            'order-service',
-                            'payment-service',
-                            'frontend',
-                            'gateway'
+                        // Map: k8s deployment/container name -> docker image name
+                        // Most services have matching names, except product-service
+                        // K8s deployment: product-service-deployment, container: product-service
+                        // Docker image: products-service (matches the directory name)
+                        def deployments = [
+                            [k8sName: 'auth-service',         imageName: 'auth-service'],
+                            [k8sName: 'notification-service', imageName: 'notification-service'],
+                            [k8sName: 'product-service',      imageName: 'products-service'],
+                            [k8sName: 'cart-service',          imageName: 'cart-service'],
+                            [k8sName: 'order-service',         imageName: 'order-service'],
+                            [k8sName: 'payment-service',       imageName: 'payment-service'],
+                            [k8sName: 'frontend',              imageName: 'frontend'],
+                            [k8sName: 'gateway',               imageName: 'api-gateway']
                         ]
 
-                        for (service in services) {
+                        for (dep in deployments) {
 
-                            echo "Deploying ${service}..."
+                            echo "Deploying ${dep.k8sName}..."
 
                             sh """
-                            kubectl set image deployment/${service}-deployment \
-                            ${service}=${DOCKERHUB_USER}/${service}:${BUILD_NUMBER} \
+                            kubectl set image deployment/${dep.k8sName}-deployment \
+                            ${dep.k8sName}=${DOCKERHUB_USER}/${dep.imageName}:${BUILD_NUMBER} \
                             -n nexcart
 
-                            kubectl rollout status deployment/${service}-deployment \
+                            kubectl rollout status deployment/${dep.k8sName}-deployment \
                             -n nexcart
                             """
                         }
