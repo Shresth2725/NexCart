@@ -1,8 +1,8 @@
 variable "region" {
-  default = "us-east-1"
+  default = "us-west-1"
 }
 
 variable "ec2_ami" {
   type    = string
-  default = "ami-00403f401ee6a4b98"
+  default = "ami-06c77cb49ac92a541"
 }

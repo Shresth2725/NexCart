@@ -65,6 +65,9 @@ resource "aws_instance" "master" {
   instance_type          = "m7i-flex.large"
   key_name               = aws_key_pair.k8s_key.key_name
   vpc_security_group_ids = [aws_security_group.k8s_sg.id]
+  root_block_device {
+    volume_size = 20
+  }
 
   tags = {
     Name = "k8s-master"
@@ -76,6 +79,9 @@ resource "aws_instance" "worker1" {
   instance_type          = "m7i-flex.large"
   key_name               = aws_key_pair.k8s_key.key_name
   vpc_security_group_ids = [aws_security_group.k8s_sg.id]
+  root_block_device {
+    volume_size = 20
+  }
 
   tags = {
     Name = "k8s-worker1"
@@ -87,6 +93,9 @@ resource "aws_instance" "worker2" {
   instance_type          = "m7i-flex.large"
   key_name               = aws_key_pair.k8s_key.key_name
   vpc_security_group_ids = [aws_security_group.k8s_sg.id]
+  root_block_device {
+    volume_size = 20
+  }
 
   tags = {
     Name = "k8s-worker2"
