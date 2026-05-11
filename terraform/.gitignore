@@ -12,3 +12,5 @@
 # Lock file (optional to ignore, but often ignored in local dev)
 .terraform.lock.hcl
 .terraform.tfstate.lock.info    
+
+*.terraform/
