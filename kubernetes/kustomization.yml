@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - namespaces
+  - redis
+  - rabbitmq
+  - auth-service
+  - cart-service
+  - frontend
+  - gateway
+  - notification-service
+  - order-service
+  - payment-service
+  - product-service
+  - ingress
