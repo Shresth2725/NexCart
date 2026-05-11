@@ -3,7 +3,7 @@ import api from '../../api/axios';
 
 export const fetchCart = createAsyncThunk('cart/fetchCart', async () => {
   const response = await api.get('/cart/cart/');
-  return response.data;
+  return response.data.cart;
 });
 
 const initialState = {
