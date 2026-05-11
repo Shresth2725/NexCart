@@ -32,6 +32,16 @@ graph TD
         RMQ --> Notif[Notification Service :3002]
     end
 
+    subgraph "monitoring namespace"
+        Prom[Prometheus] -- scrapes --> AGW
+        Prom -- scrapes --> Auth
+        Prom -- scrapes --> Prod
+        Prom -- scrapes --> Cart
+        Prom -- scrapes --> Order
+        Prom -- scrapes --> Pay
+        Grafana[Grafana] -- queries --> Prom
+    end
+
     subgraph "External Storage"
         Auth --> ADB[(MongoDB Atlas)]
         Prod --> PDB[(MongoDB Atlas)]
@@ -58,6 +68,7 @@ NexCart/
 ├── kubernetes/             # K8s manifests (Deployments, Services, Secrets, Ingress)
 ├── terraform/              # AWS infrastructure provisioning (IaC)
 ├── ansible/                # K8s cluster setup & configuration
+├── docs/                   # Documentation assets (screenshots, diagrams)
 ├── docker-compose.yml      # Local development orchestration
 └── Jenkinsfile             # CI/CD pipeline definition
 ```
@@ -93,6 +104,12 @@ NexCart/
 | Docker | Containerization |
 | Jenkins | CI/CD — Build → Push → Deploy to K8s |
 | Nginx | API Gateway & frontend serving |
+
+### Monitoring & Observability
+| Technology | Purpose |
+|---|---|
+| Prometheus | Cluster & application metrics collection |
+| Grafana | Real-time dashboards & visualization |
 
 ---
 
@@ -195,6 +212,73 @@ Each K8s deployment runs **2 replicas** with rolling update strategy for zero-do
 
 ---
 
+## 📊 Monitoring & Observability
+
+NexCart uses **Prometheus** and **Grafana** for full-stack monitoring of the Kubernetes cluster and application services.
+
+### Stack
+
+| Component | Role |
+|---|---|
+| **Prometheus** | Scrapes and stores time-series metrics from K8s nodes, pods, and services |
+| **Grafana** | Visualizes metrics via pre-configured dashboards with real-time alerts |
+| **kube-state-metrics** | Exposes cluster-level resource metrics (pods, deployments, replicas) |
+| **node-exporter** | Exposes host-level metrics (CPU, memory, disk, network) |
+
+### Kubernetes Dashboard
+
+<p align="center">
+  <img src="docs/grafana-dashboard.png" alt="Grafana Kubernetes Dashboard" width="100%" />
+</p>
+
+The Grafana dashboard provides real-time visibility into:
+
+- **Cluster Resources** — Global CPU & RAM usage (real, requests, limits)
+- **Node Health** — Node count, namespace distribution, running pod counts
+- **Pod Distribution** — Visual breakdown of pods across namespaces (`nexcart`, `kube-system`, `monitoring`, `ingress-nginx`)
+- **Utilization Metrics** — Per-namespace CPU and memory utilization percentages
+- **Network & Disk I/O** — Traffic and disk metrics across the cluster
+
+### Deployment
+
+Prometheus and Grafana are deployed in the `monitoring` namespace via Helm:
+
+```bash
+# Add the Prometheus community Helm chart
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+
+# Install the kube-prometheus-stack (Prometheus + Grafana + Alertmanager)
+helm install prometheus prometheus-community/kube-prometheus-stack \
+  --namespace monitoring --create-namespace
+```
+
+### Accessing the Dashboards
+
+Both Grafana and Prometheus are exposed via **NodePort** services in the `monitoring` namespace:
+
+```bash
+# Check the assigned NodePorts
+kubectl get svc -n monitoring
+```
+
+| Service | NodePort | URL |
+|---|---|---|
+| **Grafana** | `<NodePort>` | `http://<Node-IP>:<NodePort>` |
+| **Prometheus** | `<NodePort>` | `http://<Node-IP>:<NodePort>` |
+
+**Grafana Credentials:**
+- **Username:** `admin`
+- **Password:** Retrieve from the K8s secret:
+  ```bash
+  kubectl get secret monitoring-grafana -n monitoring \
+    -o jsonpath="{.data.admin-password}" | base64 --decode
+  ```
+
+Navigate to **Dashboards → Kubernetes** in Grafana to view cluster metrics.
+
+---
+
 ## 🔮 Roadmap
 
 - [x] Microservices architecture with event-driven messaging
@@ -204,7 +288,7 @@ Each K8s deployment runs **2 replicas** with rolling update strategy for zero-do
 - [x] Ansible automation for K8s cluster setup
 - [x] Jenkins CI/CD pipeline with K8s deployment
 - [ ] ArgoCD — GitOps-based continuous delivery
-- [ ] Monitoring — Prometheus + Grafana dashboards
+- [x] Monitoring — Prometheus + Grafana dashboards
 - [ ] Logging — ELK stack (Elasticsearch, Logstash, Kibana)
 - [ ] Service Mesh — Istio/Linkerd for traffic management & observability
 
