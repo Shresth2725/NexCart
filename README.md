@@ -53,6 +53,29 @@ graph TD
 
 ---
 
+## 🖼️ UI Screenshots
+
+<p align="center">
+  <img src="docs/login-page.png" alt="Login Page" width="80%" />
+</p>
+<p align="center"><em>Sign In — Clean, minimal authentication page</em></p>
+
+<br/>
+
+<p align="center">
+  <img src="docs/product-catalog.png" alt="Product Catalog" width="100%" />
+</p>
+<p align="center"><em>Product Catalog — Browse, filter, and search across categories</em></p>
+
+<br/>
+
+<p align="center">
+  <img src="docs/product-detail.png" alt="Product Detail Page" width="100%" />
+</p>
+<p align="center"><em>Product Detail — View product info, seller details, and add to cart</em></p>
+
+---
+
 ## 📁 Project Structure
 
 ```
