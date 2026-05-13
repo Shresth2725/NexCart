@@ -27,8 +27,8 @@ import {
 // --- Sub-views ---
 
 const StatCard = ({ icon, label, value, color }) => (
-  <div className="bg-white dark:bg-stone-900 p-5 rounded-xl border border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700 transition-colors group">
-    <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-3 ${
+  <div className="bg-white dark:bg-stone-900 p-6 rounded-2xl border border-stone-100 dark:border-stone-800 hover:border-stone-200 dark:hover:border-stone-700 transition-all group hover:shadow-lg hover:shadow-stone-100/50 dark:hover:shadow-stone-900/50">
+    <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-4 ${
       color === 'emerald' ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600' :
       color === 'blue' ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600' :
       color === 'purple' ? 'bg-violet-50 dark:bg-violet-500/10 text-violet-600' :
@@ -37,7 +37,7 @@ const StatCard = ({ icon, label, value, color }) => (
       {React.cloneElement(icon, { className: 'h-5 w-5' })}
     </div>
     <p className="text-xs text-stone-400 font-medium mb-0.5">{label}</p>
-    <p className="text-xl font-bold text-stone-900 dark:text-white">{value}</p>
+    <p className="text-2xl font-bold text-stone-900 dark:text-white tracking-tight">{value}</p>
   </div>
 );
 
@@ -57,7 +57,7 @@ const OverviewView = ({ products, orders, user, setActiveTab }) => {
 
   return (
     <div className="space-y-6 animate-fade-in-up">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         <StatCard icon={<DollarSign />} label="Revenue" value={`$${totalRevenue.toLocaleString()}`} color="emerald" />
         <StatCard icon={<ShoppingBag />} label="Orders" value={orders.length} color="blue" />
         <StatCard icon={<Package />} label="Products" value={products.length} color="purple" />
@@ -65,26 +65,26 @@ const OverviewView = ({ products, orders, user, setActiveTab }) => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-stone-900 p-5 rounded-xl border border-stone-200 dark:border-stone-800">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-sm font-semibold text-stone-800 dark:text-white">Recent orders</h3>
-            <button onClick={() => setActiveTab('orders')} className="text-blue-600 text-xs font-medium hover:underline">View all</button>
+        <div className="bg-white dark:bg-stone-900 p-6 rounded-2xl border border-stone-100 dark:border-stone-800">
+          <div className="flex justify-between items-center mb-5">
+            <h3 className="text-base font-bold text-stone-800 dark:text-white">Recent orders</h3>
+            <button onClick={() => setActiveTab('orders')} className="text-emerald-600 text-xs font-medium hover:underline">View all</button>
           </div>
           <div className="space-y-3">
             {orders.slice(0, 5).map((order) => (
-              <div key={order._id} className="flex items-center justify-between p-3 rounded-lg bg-stone-50 dark:bg-stone-800/50">
+              <div key={order._id} className="flex items-center justify-between p-3.5 rounded-xl bg-stone-50 dark:bg-stone-800/50 border border-transparent hover:border-stone-200 dark:hover:border-stone-700 transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center">
-                    <Users className="h-4 w-4 text-blue-600" />
+                  <div className="w-9 h-9 rounded-full bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center">
+                    <Users className="h-4.5 w-4.5 text-blue-600" />
                   </div>
                   <div>
-                    <p className="font-medium text-sm text-stone-700 dark:text-stone-200">{order.shippingAddress?.name || 'Customer'}</p>
+                    <p className="font-semibold text-sm text-stone-700 dark:text-stone-200">{order.shippingAddress?.name || 'Customer'}</p>
                     <p className="text-xs text-stone-400">{new Date(order.createdAt).toLocaleDateString()}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold text-sm text-stone-800 dark:text-white">${order.totalAmount}</p>
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
+                  <p className="font-bold text-sm text-stone-800 dark:text-white">${order.totalAmount}</p>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
                     order.status === 'delivered' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10' : 'bg-blue-50 text-blue-600 dark:bg-blue-500/10'
                   }`}>
                     {order.status}
@@ -96,22 +96,22 @@ const OverviewView = ({ products, orders, user, setActiveTab }) => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-stone-900 p-5 rounded-xl border border-stone-200 dark:border-stone-800">
-          <h3 className="text-sm font-semibold mb-4 text-stone-800 dark:text-white">Your store</h3>
-          <div className="space-y-4">
-            <div className="p-5 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white">
+        <div className="bg-white dark:bg-stone-900 p-6 rounded-2xl border border-stone-200 dark:border-stone-800">
+          <h3 className="text-base font-bold mb-5 text-stone-800 dark:text-white">Your store</h3>
+          <div className="space-y-5">
+            <div className="p-6 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/20">
               <p className="text-emerald-100 text-xs font-medium mb-1">Store name</p>
-              <h4 className="text-xl font-bold mb-3">{user?.sellerInfo?.storeName || "My Store"}</h4>
-              <p className="text-emerald-200/70 text-sm">{user?.sellerInfo?.storeDescription || "No description provided."}</p>
+              <h4 className="text-2xl font-bold mb-2">{user?.sellerInfo?.storeName || "My Store"}</h4>
+              <p className="text-emerald-50/80 text-sm leading-relaxed">{user?.sellerInfo?.storeDescription || "No description provided."}</p>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 rounded-lg border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800/50">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-4 rounded-xl border border-stone-100 dark:border-stone-700 bg-stone-50 dark:bg-stone-800/50">
                 <p className="text-xs text-stone-400 mb-0.5">Inventory</p>
-                <p className="text-lg font-bold text-stone-800 dark:text-white">{totalStock}</p>
+                <p className="text-xl font-bold text-stone-800 dark:text-white">{totalStock}</p>
               </div>
-              <div className="p-3 rounded-lg border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800/50">
+              <div className="p-4 rounded-xl border border-stone-100 dark:border-stone-700 bg-stone-50 dark:bg-stone-800/50">
                 <p className="text-xs text-stone-400 mb-0.5">Avg. price</p>
-                <p className="text-lg font-bold text-stone-800 dark:text-white">${avgPrice}</p>
+                <p className="text-xl font-bold text-stone-800 dark:text-white">${avgPrice}</p>
               </div>
             </div>
           </div>
@@ -128,60 +128,60 @@ const ProductsView = ({ products, searchTerm, setSearchTerm, openEditModal, hand
   );
 
   return (
-    <div className="space-y-4 animate-fade-in-up">
-      <div className="flex flex-col md:flex-row justify-between gap-3">
+    <div className="space-y-5 animate-fade-in-up">
+      <div className="flex flex-col md:flex-row justify-between gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" />
           <input 
             type="text" 
             placeholder="Search products…" 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-sm text-stone-700 dark:text-white outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-100 dark:border-stone-700 bg-white dark:bg-stone-800 text-sm text-stone-700 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all"
           />
         </div>
         <button 
           onClick={() => { setEditingProduct(null); setIsModalOpen(true); }}
-          className="flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-600 text-white rounded-lg text-sm font-semibold hover:bg-emerald-700 transition-colors"
+          className="flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-semibold hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-500/20"
         >
           <Plus className="h-4 w-4" /> Add product
         </button>
       </div>
 
-      <div className="bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800 overflow-hidden">
+      <div className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
-            <thead className="bg-stone-50 dark:bg-stone-800/50 border-b border-stone-200 dark:border-stone-800">
+            <thead className="bg-stone-50/50 dark:bg-stone-800/50 border-b border-stone-100 dark:border-stone-800">
               <tr>
-                <th className="px-5 py-3 text-xs font-medium text-stone-500">Product</th>
-                <th className="px-5 py-3 text-xs font-medium text-stone-500">Category</th>
-                <th className="px-5 py-3 text-xs font-medium text-stone-500">Price</th>
-                <th className="px-5 py-3 text-xs font-medium text-stone-500">Stock</th>
-                <th className="px-5 py-3 text-xs font-medium text-stone-500 text-right">Actions</th>
+                <th className="px-6 py-3.5 text-xs font-semibold text-stone-500">Product</th>
+                <th className="px-6 py-3.5 text-xs font-semibold text-stone-500">Category</th>
+                <th className="px-6 py-3.5 text-xs font-semibold text-stone-500">Price</th>
+                <th className="px-6 py-3.5 text-xs font-semibold text-stone-500">Stock</th>
+                <th className="px-6 py-3.5 text-xs font-semibold text-stone-500 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100 dark:divide-stone-800">
+            <tbody className="divide-y divide-stone-50 dark:divide-stone-800">
               {filteredProducts.map((product) => (
-                <tr key={product._id} className="hover:bg-stone-50 dark:hover:bg-stone-800/30 transition-colors">
-                  <td className="px-5 py-3">
+                <tr key={product._id} className="hover:bg-stone-50/50 dark:hover:bg-stone-800/30 transition-colors">
+                  <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <img src={(product.images && product.images[0]) || 'https://via.placeholder.com/40'} alt={product.name} className="w-9 h-9 rounded-lg object-cover bg-stone-100" />
-                      <span className="font-medium text-sm text-stone-700 dark:text-stone-200">{product.name}</span>
+                      <img src={(product.images && product.images[0]) || 'https://via.placeholder.com/40'} alt={product.name} className="w-10 h-10 rounded-xl object-cover bg-stone-100" />
+                      <span className="font-semibold text-sm text-stone-700 dark:text-stone-200">{product.name}</span>
                     </div>
                   </td>
-                  <td className="px-5 py-3">
-                    <span className="text-xs px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded font-medium">{product.category}</span>
+                  <td className="px-6 py-4">
+                    <span className="text-xs px-2 py-0.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 rounded-md font-medium">{product.category}</span>
                   </td>
-                  <td className="px-5 py-3 font-semibold text-sm text-stone-700 dark:text-white">${product.price}</td>
-                  <td className="px-5 py-3">
+                  <td className="px-6 py-4 font-bold text-sm text-stone-700 dark:text-white">${product.price}</td>
+                  <td className="px-6 py-4">
                     <div className="flex items-center gap-1.5">
                       <div className={`w-1.5 h-1.5 rounded-full ${(product.stock || 0) > 10 ? 'bg-emerald-500' : 'bg-red-500'}`} />
-                      <span className="text-sm text-stone-600 dark:text-stone-300">{product.stock || 0}</span>
+                      <span className="text-sm font-medium text-stone-600 dark:text-stone-300">{product.stock || 0}</span>
                     </div>
                   </td>
-                  <td className="px-5 py-3 text-right">
+                  <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-1">
-                      <button onClick={() => openEditModal(product)} className="p-2 text-stone-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg transition-colors">
+                      <button onClick={() => openEditModal(product)} className="p-2 text-stone-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-lg transition-colors">
                         <Edit3 className="h-4 w-4" />
                       </button>
                       <button onClick={() => handleDeleteProduct(product._id)} className="p-2 text-stone-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors">
@@ -194,7 +194,7 @@ const ProductsView = ({ products, searchTerm, setSearchTerm, openEditModal, hand
             </tbody>
           </table>
           {filteredProducts.length === 0 && (
-            <div className="p-10 text-center">
+            <div className="p-12 text-center">
               <Box className="h-10 w-10 text-stone-300 mx-auto mb-2" />
               <p className="text-stone-400 text-sm">No products found.</p>
             </div>
@@ -207,29 +207,29 @@ const ProductsView = ({ products, searchTerm, setSearchTerm, openEditModal, hand
 
 const OrdersView = ({ orders }) => (
   <div className="space-y-4 animate-fade-in-up">
-    <div className="bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800 overflow-hidden">
+    <div className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left">
-          <thead className="bg-stone-50 dark:bg-stone-800/50 border-b border-stone-200 dark:border-stone-800">
+          <thead className="bg-stone-50/50 dark:bg-stone-800/50 border-b border-stone-100 dark:border-stone-800">
             <tr>
-              <th className="px-5 py-3 text-xs font-medium text-stone-500">Order ID</th>
-              <th className="px-5 py-3 text-xs font-medium text-stone-500">Customer</th>
-              <th className="px-5 py-3 text-xs font-medium text-stone-500">Date</th>
-              <th className="px-5 py-3 text-xs font-medium text-stone-500">Amount</th>
-              <th className="px-5 py-3 text-xs font-medium text-stone-500">Status</th>
+              <th className="px-6 py-3.5 text-xs font-semibold text-stone-500">Order ID</th>
+              <th className="px-6 py-3.5 text-xs font-semibold text-stone-500">Customer</th>
+              <th className="px-6 py-3.5 text-xs font-semibold text-stone-500">Date</th>
+              <th className="px-6 py-3.5 text-xs font-semibold text-stone-500">Amount</th>
+              <th className="px-6 py-3.5 text-xs font-semibold text-stone-500">Status</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-stone-100 dark:divide-stone-800">
+          <tbody className="divide-y divide-stone-50 dark:divide-stone-800">
             {(orders || []).map((order) => (
-              <tr key={order._id} className="hover:bg-stone-50 dark:hover:bg-stone-800/30 transition-colors">
-                <td className="px-5 py-3 text-sm font-mono text-stone-500">#{order._id.slice(-6).toUpperCase()}</td>
-                <td className="px-5 py-3">
-                  <span className="font-medium text-sm text-stone-700 dark:text-stone-200">{order.shippingAddress?.name || 'Customer'}</span>
+              <tr key={order._id} className="hover:bg-stone-50/50 dark:hover:bg-stone-800/30 transition-colors">
+                <td className="px-6 py-4 text-sm font-mono text-stone-500">#{order._id.slice(-6).toUpperCase()}</td>
+                <td className="px-6 py-4">
+                  <span className="font-semibold text-sm text-stone-700 dark:text-stone-200">{order.shippingAddress?.name || 'Customer'}</span>
                 </td>
-                <td className="px-5 py-3 text-sm text-stone-500">{new Date(order.createdAt).toLocaleDateString()}</td>
-                <td className="px-5 py-3 font-semibold text-sm text-stone-700 dark:text-white">${order.totalAmount}</td>
-                <td className="px-5 py-3">
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
+                <td className="px-6 py-4 text-sm text-stone-500">{new Date(order.createdAt).toLocaleDateString()}</td>
+                <td className="px-6 py-4 font-bold text-sm text-stone-700 dark:text-white">${order.totalAmount}</td>
+                <td className="px-6 py-4">
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
                     order.status === 'delivered' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10' : 'bg-blue-50 text-blue-600 dark:bg-blue-500/10'
                   }`}>
                     {order.status}
@@ -240,7 +240,7 @@ const OrdersView = ({ orders }) => (
           </tbody>
         </table>
         {(orders || []).length === 0 && (
-          <div className="p-10 text-center">
+          <div className="p-12 text-center">
             <ShoppingBag className="h-10 w-10 text-stone-300 mx-auto mb-2" />
             <p className="text-stone-400 text-sm">No orders yet.</p>
           </div>
@@ -270,11 +270,11 @@ const SettingsView = ({ user }) => {
     }
   };
 
-  const inputClass = "w-full px-4 py-3 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 text-sm text-stone-700 dark:text-stone-200 transition-all";
+  const inputClass = "w-full px-4 py-3 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-100 dark:border-stone-700 outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 text-sm text-stone-700 dark:text-stone-200 transition-all placeholder-stone-400";
 
   return (
     <div className="max-w-xl animate-fade-in-up">
-      <div className="bg-white dark:bg-stone-900 p-6 rounded-xl border border-stone-200 dark:border-stone-800">
+      <div className="bg-white dark:bg-stone-900 p-6 rounded-2xl border border-stone-200 dark:border-stone-800">
         <h3 className="text-lg font-bold mb-5 text-stone-900 dark:text-white">Store settings</h3>
         <form onSubmit={handleSave} className="space-y-4">
           <div>
@@ -298,7 +298,7 @@ const SettingsView = ({ user }) => {
           <button 
             type="submit"
             disabled={saving}
-            className="w-full py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-semibold hover:bg-emerald-700 transition-colors disabled:opacity-50"
+            className="w-full py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-semibold hover:bg-emerald-700 transition-colors disabled:opacity-50 active:scale-[0.98]"
           >
             {saving ? 'Saving…' : 'Save changes'}
           </button>
@@ -398,29 +398,29 @@ const SellerDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50 dark:bg-stone-950 flex">
+    <div className="min-h-screen bg-stone-50 dark:bg-stone-950 flex font-sans">
       {/* Sidebar */}
-      <aside className="w-60 bg-white dark:bg-stone-900 border-r border-stone-200 dark:border-stone-800 flex flex-col hidden lg:flex">
-        <div className="px-5 pt-6 pb-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white">
-              <Package className="h-4 w-4" />
+      <aside className="w-60 bg-white dark:bg-stone-900 border-r border-stone-200 dark:border-stone-800 flex flex-col hidden lg:flex fixed h-full z-20">
+        <div className="px-6 pt-7 pb-5">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
+              <Package className="h-4.5 w-4.5" />
             </div>
-            <span className="text-lg font-bold text-stone-800 dark:text-white tracking-tight">NexCart</span>
+            <span className="text-xl font-bold text-stone-800 dark:text-white tracking-tight">NexCart</span>
           </div>
         </div>
 
-        <nav className="flex-1 px-3 space-y-0.5">
+        <nav className="flex-1 px-3.5 space-y-1">
           <SidebarLink active={activeTab === 'overview'} icon={<LayoutGrid />} label="Overview" onClick={() => setActiveTab('overview')} />
           <SidebarLink active={activeTab === 'products'} icon={<Box />} label="Products" onClick={() => setActiveTab('products')} />
           <SidebarLink active={activeTab === 'orders'} icon={<ShoppingBag />} label="Orders" onClick={() => setActiveTab('orders')} />
           <SidebarLink active={activeTab === 'settings'} icon={<SettingsIcon />} label="Settings" onClick={() => setActiveTab('settings')} />
         </nav>
 
-        <div className="p-3 mt-auto">
-          <div className="p-3 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-100 dark:border-stone-700">
+        <div className="p-4 mt-auto">
+          <div className="p-4 rounded-2xl bg-stone-50 dark:bg-stone-800/50 border border-stone-100 dark:border-stone-700">
             <div className="flex items-center gap-2.5 mb-3">
-              <div className="w-9 h-9 rounded-full bg-emerald-100 dark:bg-emerald-500/15 flex items-center justify-center text-emerald-600 text-sm font-semibold">
+              <div className="w-9 h-9 rounded-full bg-emerald-100 dark:bg-emerald-500/15 flex items-center justify-center text-emerald-600 font-bold">
                 {user?.name?.[0] || 'S'}
               </div>
               <div className="overflow-hidden flex-1 min-w-0">
@@ -430,7 +430,7 @@ const SellerDashboard = () => {
             </div>
             <button 
               onClick={logout}
-              className="w-full flex items-center justify-center gap-2 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors text-sm font-medium"
+              className="w-full flex items-center justify-center gap-2 py-2 text-stone-600 dark:text-stone-300 hover:bg-white dark:hover:bg-stone-700 hover:text-red-600 dark:hover:text-red-400 rounded-lg transition-colors text-sm font-medium border border-stone-200 dark:border-stone-700"
             >
               <LogOut className="h-4 w-4" /> Sign out
             </button>
@@ -439,15 +439,15 @@ const SellerDashboard = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden">
-        <header className="bg-white/80 dark:bg-stone-900/80 backdrop-blur-md border-b border-stone-200 dark:border-stone-800 px-6 py-3 flex items-center justify-between z-10">
+      <main className="flex-1 lg:ml-60 flex flex-col h-screen overflow-hidden">
+        <header className="glass border-b border-stone-200 dark:border-stone-800 px-6 py-3.5 flex items-center justify-between z-10 sticky top-0">
           <div className="flex items-center gap-3">
             <h2 className="text-base font-semibold text-stone-800 dark:text-white capitalize">{activeTab}</h2>
             <span className="text-stone-300 dark:text-stone-700">·</span>
             <p className="text-sm text-stone-400 hidden md:block">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</p>
           </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             <button onClick={toggleTheme} className="p-2 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-lg transition-colors text-stone-500">
               {theme === 'dark' ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
             </button>
@@ -458,7 +458,7 @@ const SellerDashboard = () => {
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-6 lg:p-8 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-6 lg:p-8 custom-scrollbar bg-stone-50/50 dark:bg-stone-950/50">
           {activeTab === 'overview' && <OverviewView products={products} orders={orders} user={user} setActiveTab={setActiveTab} />}
           {activeTab === 'products' && <ProductsView products={products} searchTerm={searchTerm} setSearchTerm={setSearchTerm} openEditModal={openEditModal} handleDeleteProduct={handleDeleteProduct} setIsModalOpen={setIsModalOpen} setEditingProduct={setEditingProduct} />}
           {activeTab === 'orders' && <OrdersView orders={orders} />}
@@ -479,10 +479,10 @@ const SellerDashboard = () => {
 const SidebarLink = ({ active, icon, label, onClick }) => (
   <button 
     onClick={onClick}
-    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm font-medium ${
+    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all text-sm font-medium ${
       active 
       ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' 
-      : 'text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 hover:text-stone-700'
+      : 'text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800/50 hover:text-stone-700'
     }`}
   >
     {React.cloneElement(icon, { className: 'h-[18px] w-[18px]' })}

@@ -28,9 +28,9 @@ const ProductCard = ({ product, navigate }) => {
   return (
     <div 
       onClick={() => navigate(`/product/${product._id}`)}
-      className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 overflow-hidden hover:shadow-lg hover:shadow-stone-200/50 dark:hover:shadow-stone-900/50 hover:-translate-y-0.5 transition-all duration-300 group cursor-pointer flex flex-col h-full"
+      className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 overflow-hidden hover:shadow-xl hover:shadow-stone-200/40 dark:hover:shadow-stone-900/40 hover:-translate-y-1 transition-all duration-300 group cursor-pointer flex flex-col h-full"
     >
-      <div className="relative h-52 bg-stone-100 dark:bg-stone-800 flex items-center justify-center overflow-hidden">
+      <div className="relative h-56 bg-stone-100 dark:bg-stone-800 flex items-center justify-center overflow-hidden">
         {product.images && product.images.length > 0 ? (
           <img
             src={product.images[0]}
@@ -46,7 +46,7 @@ const ProductCard = ({ product, navigate }) => {
         
         <div className="absolute top-3 left-3 flex flex-col gap-1.5">
             {hasDiscount && (
-                <span className="bg-blue-600 text-white text-[11px] font-semibold px-2 py-0.5 rounded-md">
+                <span className="bg-violet-600 text-white text-[11px] font-semibold px-2 py-0.5 rounded-md">
                     Sale
                 </span>
             )}
@@ -70,9 +70,9 @@ const ProductCard = ({ product, navigate }) => {
         </button>
       </div>
 
-      <div className="p-4 flex flex-col flex-1">
+      <div className="p-5 flex flex-col flex-1">
         <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 px-2 py-0.5 rounded">
+            <span className="text-xs font-medium text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-500/10 px-2 py-0.5 rounded">
                 {product.category}
             </span>
             <div className="flex items-center gap-1 text-amber-500 ml-auto">
@@ -81,7 +81,7 @@ const ProductCard = ({ product, navigate }) => {
             </div>
         </div>
 
-        <h3 className="text-sm font-semibold text-stone-800 dark:text-stone-100 line-clamp-2 leading-snug mb-1.5 group-hover:text-blue-600 transition-colors">
+        <h3 className="text-sm font-semibold text-stone-800 dark:text-stone-100 line-clamp-2 leading-snug mb-1.5 group-hover:text-violet-600 transition-colors">
           {product.name}
         </h3>
 
@@ -101,7 +101,7 @@ const ProductCard = ({ product, navigate }) => {
             )}
           </div>
           
-          <button className="w-9 h-9 rounded-lg bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-colors active:scale-95">
+          <button className="w-9 h-9 rounded-lg bg-violet-600 hover:bg-violet-700 text-white flex items-center justify-center transition-colors active:scale-95">
             <ShoppingCart className="h-4 w-4" />
           </button>
         </div>
@@ -113,10 +113,10 @@ const ProductCard = ({ product, navigate }) => {
 const CategoryPill = ({ label, icon, active, onClick }) => (
     <button 
         onClick={onClick}
-        className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all text-sm font-medium whitespace-nowrap ${
+        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium whitespace-nowrap ${
             active 
-            ? 'bg-blue-600 text-white' 
-            : 'bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 border border-stone-200 dark:border-stone-800'
+            ? 'bg-violet-600 text-white shadow-lg shadow-violet-500/30' 
+            : 'bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800 border border-stone-100 dark:border-stone-800'
         }`}
     >
         {icon}
@@ -224,13 +224,13 @@ const CustomerHome = () => {
     }
   };
 
-  const filterInputClass = "w-full mt-1.5 px-3 py-2 rounded-lg bg-stone-50 dark:bg-stone-800 text-sm border border-stone-200 dark:border-stone-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 outline-none transition-all text-stone-700 dark:text-stone-200 placeholder-stone-400";
+  const filterInputClass = "w-full mt-1.5 px-3 py-2 rounded-lg bg-stone-50 dark:bg-stone-800 text-sm border border-stone-200 dark:border-stone-700 focus:border-violet-500 focus:ring-1 focus:ring-violet-500/30 outline-none transition-all text-stone-700 dark:text-stone-200 placeholder-stone-400";
 
   const sidebarContent = (
     <div className="pb-4">
         <button 
             onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-            className="w-full flex items-center justify-between p-2.5 rounded-lg bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 text-sm font-medium mb-3 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
+            className="w-full flex items-center justify-between p-3 rounded-xl bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 text-sm font-medium mb-3 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
         >
             <div className="flex items-center gap-2">
                 <SlidersHorizontal className="h-4 w-4" />
@@ -290,7 +290,7 @@ const CustomerHome = () => {
                     </select>
                 </div>
 
-                <button onClick={() => handleFilter()} className="w-full py-2.5 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors active:scale-[0.98]">
+                <button onClick={() => handleFilter()} className="w-full py-2.5 bg-violet-600 text-white rounded-lg text-sm font-semibold hover:bg-violet-700 transition-colors active:scale-[0.98]">
                     Apply Filters
                 </button>
                 
@@ -313,10 +313,10 @@ const CustomerHome = () => {
             <div className="mb-8 space-y-5">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-stone-900 dark:text-white tracking-tight">
-                            Browse products
+                        <h1 className="text-3xl font-bold text-stone-900 dark:text-white tracking-tight">
+                            Explore Products
                         </h1>
-                        <p className="text-stone-500 dark:text-stone-400 text-sm mt-1">Find exactly what you need from our curated selection.</p>
+                        <p className="text-stone-500 dark:text-stone-400 text-sm mt-1">Discover our curated selection of top-quality items.</p>
                     </div>
                     <div className="flex gap-2">
                         {isSearching && (
@@ -338,7 +338,7 @@ const CustomerHome = () => {
 
             {loading ? (
                 <div className="h-64 flex items-center justify-center">
-                    <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
+                    <Loader2 className="h-8 w-8 text-violet-600 animate-spin" />
                 </div>
             ) : error ? (
                 <div className="p-6 bg-red-50 dark:bg-red-500/10 rounded-xl border border-red-200 dark:border-red-800 text-center">
@@ -346,7 +346,7 @@ const CustomerHome = () => {
                     <button onClick={fetchRandomProducts} className="mt-3 text-sm text-red-700 underline">Retry</button>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5 animate-fade-in">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 animate-fade-in">
                     {products.map((product) => (
                         <ProductCard key={product._id} product={product} navigate={navigate} />
                     ))}
@@ -357,7 +357,7 @@ const CustomerHome = () => {
                             </div>
                             <h3 className="text-lg font-semibold text-stone-700 dark:text-stone-200">No products found</h3>
                             <p className="text-sm text-stone-500">Try adjusting your search or filters.</p>
-                            <button onClick={fetchRandomProducts} className="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">Browse all</button>
+                            <button onClick={fetchRandomProducts} className="px-5 py-2 bg-violet-600 text-white rounded-lg text-sm font-medium hover:bg-violet-700 transition-colors">Browse all</button>
                         </div>
                     )}
                 </div>
