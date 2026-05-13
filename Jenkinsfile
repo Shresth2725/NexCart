@@ -46,6 +46,39 @@ pipeline {
             }
         }
 
+        stage('Vulnerability Scan - Trivy') {
+            steps {
+
+                    script {
+
+                        def services = [
+                            'auth-service',
+                            'notification-service',
+                            'products-service',
+                            'cart-service',
+                            'order-service',
+                            'payment-service',
+                            'frontend',
+                            'api-gateway'
+                        ]
+
+                        for (service in services) {
+
+                            echo "Scanning ${service}..."
+
+                            sh """
+                            trivy image \
+                            ${DOCKERHUB_USER}/${service}:latest \
+                            --format table \
+                            --severity CRITICAL\
+                            --exit-code 1
+                            """
+                        }
+                    }
+                }
+            }
+        }   
+
         stage('Login to DockerHub') {
             steps {
 
