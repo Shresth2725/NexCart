@@ -12,10 +12,10 @@ import {
   Tag, 
   Heart, 
   RotateCcw,
-  LayoutDashboard,
+  LayoutGrid,
   ChevronDown,
   ChevronUp,
-  Filter
+  SlidersHorizontal
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import CustomerLayout from '../../components/CustomerLayout';
@@ -28,81 +28,81 @@ const ProductCard = ({ product, navigate }) => {
   return (
     <div 
       onClick={() => navigate(`/product/${product._id}`)}
-      className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1 transition-all duration-300 group cursor-pointer flex flex-col h-full"
+      className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 overflow-hidden hover:shadow-lg hover:shadow-stone-200/50 dark:hover:shadow-stone-900/50 hover:-translate-y-0.5 transition-all duration-300 group cursor-pointer flex flex-col h-full"
     >
-      <div className="relative h-56 bg-gray-50 dark:bg-gray-900/50 flex items-center justify-center overflow-hidden">
+      <div className="relative h-52 bg-stone-100 dark:bg-stone-800 flex items-center justify-center overflow-hidden">
         {product.images && product.images.length > 0 ? (
           <img
             src={product.images[0]}
             alt={product.name}
-            className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
+            className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
-          <div className="flex flex-col items-center text-gray-300">
-            <Package className="h-16 w-16" />
-            <span className="text-xs mt-2 uppercase font-black tracking-widest opacity-50">No Preview</span>
+          <div className="flex flex-col items-center text-stone-300 dark:text-stone-600">
+            <Package className="h-12 w-12" />
+            <span className="text-xs mt-1.5 text-stone-400">No image</span>
           </div>
         )}
         
-        <div className="absolute top-4 left-4 flex flex-col gap-2">
+        <div className="absolute top-3 left-3 flex flex-col gap-1.5">
             {hasDiscount && (
-                <span className="bg-indigo-600 text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-lg">
+                <span className="bg-blue-600 text-white text-[11px] font-semibold px-2 py-0.5 rounded-md">
                     Sale
                 </span>
             )}
             {product.stock <= 5 && product.stock > 0 && (
-                <span className="bg-amber-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-lg">
-                    Low Stock
+                <span className="bg-amber-500 text-white text-[11px] font-semibold px-2 py-0.5 rounded-md">
+                    Low stock
                 </span>
             )}
             {product.stock === 0 && (
-                <span className="bg-red-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-lg">
-                    Out of Stock
+                <span className="bg-stone-800 text-white text-[11px] font-semibold px-2 py-0.5 rounded-md">
+                    Sold out
                 </span>
             )}
         </div>
 
-        <button className="absolute top-4 right-4 p-2.5 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-full text-gray-400 hover:text-red-500 transition-colors shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
+        <button 
+          className="absolute top-3 right-3 p-2 bg-white/90 dark:bg-stone-900/90 backdrop-blur-sm rounded-full text-stone-400 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100"
+          onClick={(e) => e.stopPropagation()}
+        >
             <Heart className="h-4 w-4" />
         </button>
       </div>
 
-      <div className="p-6 flex flex-col flex-1">
+      <div className="p-4 flex flex-col flex-1">
         <div className="flex items-center gap-2 mb-2">
-            <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest bg-indigo-50 dark:bg-indigo-500/10 px-2 py-0.5 rounded">
+            <span className="text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 px-2 py-0.5 rounded">
                 {product.category}
             </span>
-            <div className="flex items-center gap-0.5 text-amber-500 ml-auto">
+            <div className="flex items-center gap-1 text-amber-500 ml-auto">
                 <Star className="h-3 w-3 fill-current" />
-                <span className="text-[10px] font-bold">4.8</span>
+                <span className="text-xs font-medium text-stone-500">4.8</span>
             </div>
         </div>
 
-        <h3 className="text-base font-bold text-gray-800 dark:text-white line-clamp-2 leading-tight mb-2 group-hover:text-indigo-600 transition-colors">
+        <h3 className="text-sm font-semibold text-stone-800 dark:text-stone-100 line-clamp-2 leading-snug mb-1.5 group-hover:text-blue-600 transition-colors">
           {product.name}
         </h3>
 
-        <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-4 leading-relaxed">
+        <p className="text-xs text-stone-400 dark:text-stone-500 line-clamp-2 mb-3 leading-relaxed">
             {product.description}
         </p>
 
-        <div className="mt-auto pt-4 border-t border-gray-50 dark:border-gray-700/50 flex items-center justify-between">
-          <div className="flex flex-col">
-            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">Starting from</span>
-            <div className="flex items-baseline gap-2">
-              {hasDiscount ? (
-                <>
-                  <span className="text-xl font-black text-indigo-600 dark:text-indigo-400">₹{product.discountPrice}</span>
-                  <span className="text-xs text-gray-400 line-through font-bold">₹{product.price}</span>
-                </>
-              ) : (
-                <span className="text-xl font-black text-gray-900 dark:text-white">₹{product.price}</span>
-              )}
-            </div>
+        <div className="mt-auto pt-3 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
+          <div>
+            {hasDiscount ? (
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-lg font-bold text-stone-900 dark:text-white">₹{product.discountPrice}</span>
+                <span className="text-xs text-stone-400 line-through">₹{product.price}</span>
+              </div>
+            ) : (
+              <span className="text-lg font-bold text-stone-900 dark:text-white">₹{product.price}</span>
+            )}
           </div>
           
-          <button className="w-10 h-10 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white flex items-center justify-center transition-all shadow-lg shadow-indigo-600/20 group-hover:scale-110 active:scale-95">
-            <ShoppingCart className="h-5 w-5" />
+          <button className="w-9 h-9 rounded-lg bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-colors active:scale-95">
+            <ShoppingCart className="h-4 w-4" />
           </button>
         </div>
       </div>
@@ -113,10 +113,10 @@ const ProductCard = ({ product, navigate }) => {
 const CategoryPill = ({ label, icon, active, onClick }) => (
     <button 
         onClick={onClick}
-        className={`flex items-center gap-2.5 px-5 py-3 rounded-2xl transition-all font-bold text-sm whitespace-nowrap ${
+        className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all text-sm font-medium whitespace-nowrap ${
             active 
-            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 scale-[1.02]' 
-            : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700'
+            ? 'bg-blue-600 text-white' 
+            : 'bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 border border-stone-200 dark:border-stone-800'
         }`}
     >
         {icon}
@@ -224,56 +224,58 @@ const CustomerHome = () => {
     }
   };
 
+  const filterInputClass = "w-full mt-1.5 px-3 py-2 rounded-lg bg-stone-50 dark:bg-stone-800 text-sm border border-stone-200 dark:border-stone-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 outline-none transition-all text-stone-700 dark:text-stone-200 placeholder-stone-400";
+
   const sidebarContent = (
-    <div className="pb-6">
+    <div className="pb-4">
         <button 
             onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-            className="w-full flex items-center justify-between p-3 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold text-sm mb-4"
+            className="w-full flex items-center justify-between p-2.5 rounded-lg bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 text-sm font-medium mb-3 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
         >
             <div className="flex items-center gap-2">
-                <Filter className="h-4 w-4" />
-                Advanced Filters
+                <SlidersHorizontal className="h-4 w-4" />
+                Filters
             </div>
             {isFiltersOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
         </button>
         
         {isFiltersOpen && (
-            <div className="space-y-5 px-2 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="space-y-4 px-0.5 animate-fade-in">
                 <div>
-                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-tight">Brand</label>
+                    <label className="text-xs font-medium text-stone-500">Brand</label>
                     <input 
                         type="text" 
-                        placeholder="e.g. Nike, Apple..." 
+                        placeholder="e.g. Nike, Apple" 
                         value={brand}
                         onChange={(e) => setBrand(e.target.value)}
-                        className="w-full mt-1 px-3 py-2 rounded-xl bg-gray-50 dark:bg-gray-800 text-xs border border-transparent focus:border-indigo-500 outline-none transition-all dark:text-white"
+                        className={filterInputClass}
                     />
                 </div>
 
                 <div>
-                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-tight">Category</label>
+                    <label className="text-xs font-medium text-stone-500">Category</label>
                     <input 
                         type="text" 
-                        placeholder="e.g. Electronics..." 
+                        placeholder="e.g. Electronics" 
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
-                        className="w-full mt-1 px-3 py-2 rounded-xl bg-gray-50 dark:bg-gray-800 text-xs border border-transparent focus:border-indigo-500 outline-none transition-all dark:text-white"
+                        className={filterInputClass}
                     />
                 </div>
 
                 <div>
-                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-tight">Price Range (₹)</label>
-                    <div className="grid grid-cols-2 gap-2 mt-1">
-                        <input type="number" placeholder="Min" value={priceMin} onChange={(e) => setPriceMin(e.target.value)} className="w-full px-3 py-2 rounded-xl bg-gray-50 dark:bg-gray-800 text-xs border border-transparent focus:border-indigo-500 outline-none dark:text-white" />
-                        <input type="number" placeholder="Max" value={priceMax} onChange={(e) => setPriceMax(e.target.value)} className="w-full px-3 py-2 rounded-xl bg-gray-50 dark:bg-gray-800 text-xs border border-transparent focus:border-indigo-500 outline-none dark:text-white" />
+                    <label className="text-xs font-medium text-stone-500">Price range (₹)</label>
+                    <div className="grid grid-cols-2 gap-2 mt-1.5">
+                        <input type="number" placeholder="Min" value={priceMin} onChange={(e) => setPriceMin(e.target.value)} className={filterInputClass + ' !mt-0'} />
+                        <input type="number" placeholder="Max" value={priceMax} onChange={(e) => setPriceMax(e.target.value)} className={filterInputClass + ' !mt-0'} />
                     </div>
                 </div>
 
                 <div>
-                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-tight">Minimum Rating</label>
-                    <div className="flex gap-1 mt-1">
+                    <label className="text-xs font-medium text-stone-500">Min. rating</label>
+                    <div className="flex gap-1 mt-1.5">
                         {[1, 2, 3, 4, 5].map((star) => (
-                            <button key={star} onClick={() => setRating(star)} className={`p-1.5 rounded-lg transition-all ${rating >= star ? 'text-amber-500 bg-amber-50 dark:bg-amber-500/10' : 'text-gray-300 hover:text-gray-400'}`}>
+                            <button key={star} onClick={() => setRating(star)} className={`p-1.5 rounded-md transition-colors ${rating >= star ? 'text-amber-500 bg-amber-50 dark:bg-amber-500/10' : 'text-stone-300 hover:text-stone-400'}`}>
                                 <Star className={`h-4 w-4 ${rating >= star ? 'fill-current' : ''}`} />
                             </button>
                         ))}
@@ -281,19 +283,19 @@ const CustomerHome = () => {
                 </div>
 
                 <div>
-                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-tight">Sort By Price</label>
-                    <select value={sort} onChange={(e) => setSort(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-xl bg-gray-50 dark:bg-gray-800 text-xs border border-transparent focus:border-indigo-500 outline-none dark:text-white appearance-none">
-                        <option value="asc">Lowest First</option>
-                        <option value="desc">Highest First</option>
+                    <label className="text-xs font-medium text-stone-500">Sort by price</label>
+                    <select value={sort} onChange={(e) => setSort(e.target.value)} className={filterInputClass}>
+                        <option value="asc">Lowest first</option>
+                        <option value="desc">Highest first</option>
                     </select>
                 </div>
 
-                <button onClick={() => handleFilter()} className="w-full py-3 bg-indigo-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20 active:scale-95">
+                <button onClick={() => handleFilter()} className="w-full py-2.5 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors active:scale-[0.98]">
                     Apply Filters
                 </button>
                 
-                <button onClick={fetchRandomProducts} className="w-full py-3 border border-gray-100 dark:border-gray-700 text-gray-500 dark:text-gray-400 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex items-center justify-center gap-2">
-                    <RotateCcw className="h-3 w-3" /> Reset All
+                <button onClick={fetchRandomProducts} className="w-full py-2.5 border border-stone-200 dark:border-stone-700 text-stone-500 dark:text-stone-400 rounded-lg text-sm font-medium hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors flex items-center justify-center gap-2">
+                    <RotateCcw className="h-3.5 w-3.5" /> Reset
                 </button>
             </div>
         )}
@@ -307,54 +309,55 @@ const CustomerHome = () => {
         searchQuery={searchQuery} 
         setSearchQuery={setSearchQuery}
     >
-        <div className="p-8">
-            <div className="mb-10 space-y-6">
+        <div className="p-6 lg:p-8">
+            <div className="mb-8 space-y-5">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <div>
-                        <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
-                            Discover <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Excellence</span>
+                        <h1 className="text-2xl font-bold text-stone-900 dark:text-white tracking-tight">
+                            Browse products
                         </h1>
-                        <p className="text-gray-500 dark:text-gray-400 font-medium mt-1">Curated premium selection just for you.</p>
+                        <p className="text-stone-500 dark:text-stone-400 text-sm mt-1">Find exactly what you need from our curated selection.</p>
                     </div>
                     <div className="flex gap-2">
                         {isSearching && (
-                            <button onClick={fetchRandomProducts} className="flex items-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-2xl text-xs font-black uppercase tracking-wider hover:bg-red-100 transition-all">
-                                <X className="h-4 w-4" /> Clear Results
+                            <button onClick={fetchRandomProducts} className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors">
+                                <X className="h-3.5 w-3.5" /> Clear
                             </button>
                         )}
                     </div>
                 </div>
 
-                <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
-                    <CategoryPill label="All Products" icon={<Zap className="h-4 w-4" />} active={category === '' && !brand && !rating} onClick={() => fetchRandomProducts()} />
+                <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+                    <CategoryPill label="All" icon={<Zap className="h-4 w-4" />} active={category === '' && !brand && !rating} onClick={() => fetchRandomProducts()} />
                     <CategoryPill label="Electronics" icon={<Package className="h-4 w-4" />} active={category === 'Electronics'} onClick={() => handleCategoryClick('Electronics')} />
                     <CategoryPill label="Fashion" icon={<Tag className="h-4 w-4" />} active={category === 'Fashion'} onClick={() => handleCategoryClick('Fashion')} />
-                    <CategoryPill label="Home & Living" icon={<LayoutDashboard className="h-4 w-4" />} active={category === 'Home'} onClick={() => handleCategoryClick('Home')} />
+                    <CategoryPill label="Home & Living" icon={<LayoutGrid className="h-4 w-4" />} active={category === 'Home'} onClick={() => handleCategoryClick('Home')} />
                     <CategoryPill label="Beauty" icon={<Star className="h-4 w-4" />} active={category === 'Beauty'} onClick={() => handleCategoryClick('Beauty')} />
                 </div>
             </div>
 
             {loading ? (
                 <div className="h-64 flex items-center justify-center">
-                    <Loader2 className="h-10 w-10 text-indigo-600 animate-spin" />
+                    <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
                 </div>
             ) : error ? (
-                <div className="p-8 bg-red-50 dark:bg-red-500/10 rounded-3xl border border-red-100 dark:border-red-500/20 text-center">
-                    <p className="text-red-600 dark:text-red-400 font-bold">{error}</p>
-                    <button onClick={fetchRandomProducts} className="mt-4 text-sm text-red-700 underline font-medium">Retry loading</button>
+                <div className="p-6 bg-red-50 dark:bg-red-500/10 rounded-xl border border-red-200 dark:border-red-800 text-center">
+                    <p className="text-red-600 dark:text-red-400 text-sm font-medium">{error}</p>
+                    <button onClick={fetchRandomProducts} className="mt-3 text-sm text-red-700 underline">Retry</button>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5 animate-fade-in">
                     {products.map((product) => (
                         <ProductCard key={product._id} product={product} navigate={navigate} />
                     ))}
                     {products.length === 0 && (
-                        <div className="col-span-full py-20 text-center space-y-4">
-                            <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto">
-                                <Search className="h-8 w-8 text-gray-400" />
+                        <div className="col-span-full py-16 text-center space-y-3">
+                            <div className="w-16 h-16 bg-stone-100 dark:bg-stone-800 rounded-full flex items-center justify-center mx-auto">
+                                <Search className="h-6 w-6 text-stone-400" />
                             </div>
-                            <h3 className="text-xl font-bold dark:text-white">No products found</h3>
-                            <button onClick={fetchRandomProducts} className="px-6 py-2 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20">Return Home</button>
+                            <h3 className="text-lg font-semibold text-stone-700 dark:text-stone-200">No products found</h3>
+                            <p className="text-sm text-stone-500">Try adjusting your search or filters.</p>
+                            <button onClick={fetchRandomProducts} className="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">Browse all</button>
                         </div>
                     )}
                 </div>

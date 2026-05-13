@@ -12,7 +12,7 @@ const Settings = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const tabs = [
-    { id: 'profile', label: 'Profile Settings', icon: User },
+    { id: 'profile', label: 'Profile', icon: User },
     { id: 'orders', label: 'Order History', icon: Package },
     { id: 'addresses', label: 'Addresses', icon: MapPin },
     { id: 'password', label: 'Security', icon: KeyRound },
@@ -25,21 +25,16 @@ const Settings = () => {
         setSearchQuery={setSearchQuery}
         onSearch={() => navigate(`/home?search=${encodeURIComponent(searchQuery)}`)}
     >
-        <div className="p-8">
-            <div className="flex gap-4 mb-8">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-600/20">
-                    <User className="h-6 w-6" />
-                </div>
-                <div>
-                    <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Account Hub</h1>
-                    <p className="text-gray-500 dark:text-gray-400 font-medium">Manage your profile, security, and preferences.</p>
-                </div>
+        <div className="p-6 lg:p-8">
+            <div className="mb-8">
+                <h1 className="text-2xl font-bold text-stone-900 dark:text-white tracking-tight">Settings</h1>
+                <p className="text-stone-500 dark:text-stone-400 text-sm mt-1">Manage your profile, security, and preferences.</p>
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-8">
+            <div className="flex flex-col lg:flex-row gap-6">
                 {/* Tab Sidebar */}
-                <div className="lg:w-64 flex-shrink-0">
-                    <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-3 space-y-1">
+                <div className="lg:w-56 flex-shrink-0">
+                    <div className="bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800 p-2 space-y-0.5">
                         {tabs.map(tab => {
                             const Icon = tab.icon;
                             const isActive = activeTab === tab.id;
@@ -48,13 +43,13 @@ const Settings = () => {
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
-                                    className={`flex items-center gap-3 w-full px-4 py-3 rounded-2xl text-sm font-bold transition-all
+                                    className={`flex items-center gap-2.5 w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
                                         ${isActive
-                                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
-                                            : 'text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-gray-400'
+                                            ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400'
+                                            : 'text-stone-500 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800'
                                         }`}
                                 >
-                                    <Icon className="h-5 w-5" />
+                                    <Icon className="h-[18px] w-[18px]" />
                                     {tab.label}
                                 </button>
                             );
@@ -63,7 +58,7 @@ const Settings = () => {
                 </div>
 
                 {/* Tab Content */}
-                <div key={activeTab} className="flex-1 bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div key={activeTab} className="flex-1 bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800 p-6 animate-fade-in">
                     {activeTab === 'profile' && <ProfileTab />}
                     {activeTab === 'orders' && <OrdersTab />}
                     {activeTab === 'addresses' && <AddressesTab />}
@@ -78,7 +73,9 @@ const Settings = () => {
 
 export default Settings;
 
-// --- Tab Components (Keep as is but update styles) ---
+// --- Tab Components ---
+
+const inputClass = "w-full px-4 py-3 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 text-sm text-stone-700 dark:text-stone-200 transition-all";
 
 const ProfileTab = () => {
   const { user, setUser } = useAuth();
@@ -106,35 +103,35 @@ const ProfileTab = () => {
   };
 
   return (
-    <form onSubmit={handleUpdate} className="space-y-6 max-w-xl">
-      <h2 className="text-xl font-black dark:text-white">Profile Information</h2>
+    <form onSubmit={handleUpdate} className="space-y-5 max-w-lg">
+      <h2 className="text-lg font-bold text-stone-900 dark:text-white">Profile</h2>
       <div className="space-y-4">
         <div>
-            <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1 block">Full Name</label>
+            <label className="text-sm font-medium text-stone-500 dark:text-stone-400 mb-1.5 block">Full Name</label>
             <input
                 value={formData.name}
                 onChange={e => setFormData({ ...formData, name: e.target.value })}
-                className="w-full p-3 rounded-2xl bg-gray-50 dark:bg-gray-900 border-none outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white"
+                className={inputClass}
             />
         </div>
         <div>
-            <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1 block">Email Address</label>
-            <input value={formData.email} disabled className="w-full p-3 rounded-2xl bg-gray-100 dark:bg-gray-900/50 border-none text-gray-500 cursor-not-allowed" />
+            <label className="text-sm font-medium text-stone-500 dark:text-stone-400 mb-1.5 block">Email</label>
+            <input value={formData.email} disabled className={inputClass + ' opacity-50 cursor-not-allowed'} />
         </div>
         <div>
-            <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1 block">Phone Number</label>
+            <label className="text-sm font-medium text-stone-500 dark:text-stone-400 mb-1.5 block">Phone</label>
             <input
                 value={formData.phone}
                 onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                className="w-full p-3 rounded-2xl bg-gray-50 dark:bg-gray-900 border-none outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white"
+                className={inputClass}
             />
         </div>
       </div>
 
-      {msg && <p className={`text-sm font-bold ${msg.includes('success') ? 'text-emerald-600' : 'text-red-600'}`}>{msg}</p>}
+      {msg && <p className={`text-sm font-medium ${msg.includes('success') ? 'text-emerald-600' : 'text-red-600'}`}>{msg}</p>}
 
-      <button className="bg-indigo-600 text-white px-8 py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20 active:scale-95 flex items-center gap-2">
-        {loading ? <Loader2 className="animate-spin h-5 w-5" /> : 'Save Changes'}
+      <button className="bg-blue-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors active:scale-[0.98] flex items-center gap-2">
+        {loading ? <Loader2 className="animate-spin h-4 w-4" /> : 'Save changes'}
       </button>
     </form>
   );
@@ -157,20 +154,20 @@ const PasswordTab = () => {
     };
   
     return (
-      <form onSubmit={handleUpdate} className="space-y-6 max-w-md">
-        <h2 className="text-xl font-black dark:text-white">Security</h2>
+      <form onSubmit={handleUpdate} className="space-y-5 max-w-md">
+        <h2 className="text-lg font-bold text-stone-900 dark:text-white">Security</h2>
         <div className="space-y-4">
-            <input type="password" placeholder="Current Password"
+            <input type="password" placeholder="Current password"
                 onChange={e => setFormData({ ...formData, oldPassword: e.target.value })}
-                className="w-full p-3 rounded-2xl bg-gray-50 dark:bg-gray-900 border-none outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white"
+                className={inputClass}
             />
-            <input type="password" placeholder="New Password"
+            <input type="password" placeholder="New password"
                 onChange={e => setFormData({ ...formData, newPassword: e.target.value })}
-                className="w-full p-3 rounded-2xl bg-gray-50 dark:bg-gray-900 border-none outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white"
+                className={inputClass}
             />
         </div>
-        <button className="bg-indigo-600 text-white px-8 py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-indigo-700 shadow-lg shadow-indigo-600/20">
-          {loading ? <Loader2 className="animate-spin h-5 w-5" /> : 'Update Password'}
+        <button className="bg-blue-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors active:scale-[0.98]">
+          {loading ? <Loader2 className="animate-spin h-4 w-4" /> : 'Update password'}
         </button>
       </form>
     );
@@ -225,89 +222,59 @@ const AddressesTab = () => {
     }
   };
 
-  if (loading) return <div className="flex justify-center p-12"><Loader2 className="animate-spin h-10 w-10 text-indigo-600" /></div>;
+  if (loading) return <div className="flex justify-center p-12"><Loader2 className="animate-spin h-8 w-8 text-blue-600" /></div>;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-black dark:text-white">Your Addresses</h2>
+        <h2 className="text-lg font-bold text-stone-900 dark:text-white">Addresses</h2>
         {!showAddForm && (
           <button 
             onClick={() => setShowAddForm(true)}
-            className="text-sm font-black text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
+            className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
           >
-            + Add New
+            + Add new
           </button>
         )}
       </div>
 
       {showAddForm ? (
-        <form onSubmit={handleAddAddress} className="bg-gray-50 dark:bg-gray-900/50 p-6 rounded-3xl border border-gray-100 dark:border-gray-700 space-y-4 animate-in fade-in zoom-in-95 duration-300">
-          <div className="grid grid-cols-1 gap-4">
+        <form onSubmit={handleAddAddress} className="bg-stone-50 dark:bg-stone-800/50 p-5 rounded-xl border border-stone-200 dark:border-stone-700 space-y-3 animate-fade-in">
+          <div>
+            <label className="text-sm font-medium text-stone-500 mb-1.5 block">Street</label>
+            <input
+              required
+              value={newAddress.street}
+              onChange={e => setNewAddress({...newAddress, street: e.target.value})}
+              placeholder="123 Main Street"
+              className={inputClass}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1 block">Street Address</label>
-              <input
-                required
-                value={newAddress.street}
-                onChange={e => setNewAddress({...newAddress, street: e.target.value})}
-                placeholder="e.g. 123 Luxury Lane"
-                className="w-full p-3 rounded-2xl bg-white dark:bg-gray-800 border-none outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white"
-              />
+              <label className="text-sm font-medium text-stone-500 mb-1.5 block">City</label>
+              <input required value={newAddress.city} onChange={e => setNewAddress({...newAddress, city: e.target.value})} className={inputClass} />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1 block">City</label>
-                <input
-                  required
-                  value={newAddress.city}
-                  onChange={e => setNewAddress({...newAddress, city: e.target.value})}
-                  className="w-full p-3 rounded-2xl bg-white dark:bg-gray-800 border-none outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1 block">State</label>
-                <input
-                  required
-                  value={newAddress.state}
-                  onChange={e => setNewAddress({...newAddress, state: e.target.value})}
-                  className="w-full p-3 rounded-2xl bg-white dark:bg-gray-800 border-none outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white"
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1 block">Pincode</label>
-                <input
-                  required
-                  value={newAddress.pincode}
-                  onChange={e => setNewAddress({...newAddress, pincode: e.target.value})}
-                  className="w-full p-3 rounded-2xl bg-white dark:bg-gray-800 border-none outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1 block">Country</label>
-                <input
-                  required
-                  value={newAddress.country}
-                  onChange={e => setNewAddress({...newAddress, country: e.target.value})}
-                  className="w-full p-3 rounded-2xl bg-white dark:bg-gray-800 border-none outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white"
-                />
-              </div>
+            <div>
+              <label className="text-sm font-medium text-stone-500 mb-1.5 block">State</label>
+              <input required value={newAddress.state} onChange={e => setNewAddress({...newAddress, state: e.target.value})} className={inputClass} />
             </div>
           </div>
-          <div className="flex gap-3 pt-2">
-            <button 
-              type="submit"
-              disabled={submitLoading}
-              className="flex-1 bg-indigo-600 text-white py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-indigo-700 transition-all flex justify-center items-center gap-2"
-            >
-              {submitLoading ? <Loader2 className="animate-spin h-5 w-5" /> : 'Save Address'}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-sm font-medium text-stone-500 mb-1.5 block">Pincode</label>
+              <input required value={newAddress.pincode} onChange={e => setNewAddress({...newAddress, pincode: e.target.value})} className={inputClass} />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-stone-500 mb-1.5 block">Country</label>
+              <input required value={newAddress.country} onChange={e => setNewAddress({...newAddress, country: e.target.value})} className={inputClass} />
+            </div>
+          </div>
+          <div className="flex gap-3 pt-1">
+            <button type="submit" disabled={submitLoading} className="flex-1 bg-blue-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors flex justify-center items-center gap-2">
+              {submitLoading ? <Loader2 className="animate-spin h-4 w-4" /> : 'Save address'}
             </button>
-            <button 
-              type="button"
-              onClick={() => setShowAddForm(false)}
-              className="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-gray-300 dark:hover:bg-gray-600 transition-all"
-            >
+            <button type="button" onClick={() => setShowAddForm(false)} className="flex-1 bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-200 py-2.5 rounded-xl text-sm font-medium hover:bg-stone-300 dark:hover:bg-stone-600 transition-colors">
               Cancel
             </button>
           </div>
@@ -315,34 +282,34 @@ const AddressesTab = () => {
       ) : (
         <>
           {addresses.length === 0 ? (
-            <div className="text-center py-12 bg-gray-50 dark:bg-gray-900/50 rounded-3xl border-2 border-dashed border-gray-200 dark:border-gray-700">
-              <MapPin className="mx-auto text-gray-300 h-12 w-12 mb-3" />
-              <p className="text-gray-500 font-medium">No saved addresses yet.</p>
+            <div className="text-center py-10 bg-stone-50 dark:bg-stone-800/30 rounded-xl border border-dashed border-stone-300 dark:border-stone-700">
+              <MapPin className="mx-auto text-stone-300 dark:text-stone-600 h-10 w-10 mb-2" />
+              <p className="text-stone-400 text-sm">No saved addresses.</p>
               <button 
                 onClick={() => setShowAddForm(true)}
-                className="mt-4 text-indigo-600 font-bold hover:underline"
+                className="mt-3 text-blue-600 text-sm font-medium hover:underline"
               >
                 Add your first address
               </button>
             </div>
           ) : (
-            <div className="grid gap-4">
+            <div className="space-y-3">
               {addresses.map(addr => (
-                <div key={addr._id} className="p-5 rounded-2xl bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-700 flex justify-between items-center group hover:border-indigo-500 hover:shadow-md transition-all duration-300">
-                  <div className="flex gap-4 items-center">
-                    <div className="w-10 h-10 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center text-indigo-600 shadow-sm">
-                      <MapPin size={20} />
+                <div key={addr._id} className="p-4 rounded-xl bg-stone-50 dark:bg-stone-800/50 border border-stone-200 dark:border-stone-700 flex justify-between items-center group hover:border-stone-300 dark:hover:border-stone-600 transition-colors">
+                  <div className="flex gap-3 items-center">
+                    <div className="w-9 h-9 rounded-lg bg-white dark:bg-stone-800 flex items-center justify-center text-blue-600 border border-stone-200 dark:border-stone-700">
+                      <MapPin size={16} />
                     </div>
                     <div>
-                      <p className="font-bold text-gray-900 dark:text-white">{addr.street}</p>
-                      <p className="text-sm text-gray-500 font-medium">{addr.city}, {addr.state} - {addr.pincode}</p>
+                      <p className="font-medium text-stone-800 dark:text-stone-100 text-sm">{addr.street}</p>
+                      <p className="text-xs text-stone-400">{addr.city}, {addr.state} — {addr.pincode}</p>
                     </div>
                   </div>
                   <button 
                     onClick={() => handleDeleteAddress(addr._id)}
-                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all opacity-0 group-hover:opacity-100"
+                    className="p-2 text-stone-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all opacity-0 group-hover:opacity-100"
                   >
-                    <Trash2 size={20} />
+                    <Trash2 size={16} />
                   </button>
                 </div>
               ))}
@@ -357,15 +324,15 @@ const AddressesTab = () => {
 const OrdersTab = () => {
     const navigate = useNavigate();
     return (
-        <div className="text-center py-10">
-            <Package className="mx-auto h-12 w-12 text-indigo-600 mb-4" />
-            <h3 className="text-xl font-black dark:text-white">View Full History</h3>
-            <p className="text-gray-500 mb-6">Manage all your past purchases in one dedicated place.</p>
+        <div className="text-center py-8">
+            <Package className="mx-auto h-10 w-10 text-blue-600 mb-3" />
+            <h3 className="text-lg font-bold text-stone-800 dark:text-white">Order history</h3>
+            <p className="text-stone-400 text-sm mb-5">View and manage all your past purchases.</p>
             <button 
                 onClick={() => navigate('/orders')}
-                className="px-8 py-3 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-indigo-700 shadow-lg shadow-indigo-600/20 transition-all"
+                className="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors"
             >
-                Open Orders Hub
+                View orders
             </button>
         </div>
     );
@@ -375,18 +342,18 @@ const PreferencesTab = () => {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <div className="space-y-6">
-        <h2 className="text-xl font-black dark:text-white">Preferences</h2>
-        <div className="flex justify-between items-center p-5 rounded-2xl bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700">
+    <div className="space-y-5">
+        <h2 className="text-lg font-bold text-stone-900 dark:text-white">Preferences</h2>
+        <div className="flex justify-between items-center p-4 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700">
             <div>
-                <p className="font-bold dark:text-white">Dark Appearance</p>
-                <p className="text-xs text-gray-500">Toggle between light and dark themes.</p>
+                <p className="font-medium text-stone-800 dark:text-stone-100 text-sm">Dark mode</p>
+                <p className="text-xs text-stone-400 mt-0.5">Switch between light and dark theme.</p>
             </div>
             <button 
                 onClick={toggleTheme} 
-                className={`w-14 h-8 rounded-full p-1 transition-all ${theme === 'dark' ? 'bg-indigo-600' : 'bg-gray-300'}`}
+                className={`w-12 h-7 rounded-full p-0.5 transition-colors ${theme === 'dark' ? 'bg-blue-600' : 'bg-stone-300'}`}
             >
-                <div className={`w-6 h-6 rounded-full bg-white shadow-sm transform transition-transform ${theme === 'dark' ? 'translate-x-6' : 'translate-x-0'}`} />
+                <div className={`w-6 h-6 rounded-full bg-white shadow-sm transform transition-transform ${theme === 'dark' ? 'translate-x-5' : 'translate-x-0'}`} />
             </button>
         </div>
     </div>

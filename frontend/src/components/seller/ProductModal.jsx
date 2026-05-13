@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Upload, Plus, Trash2 } from 'lucide-react';
+import { X, Plus, Trash2 } from 'lucide-react';
 
 const ProductModal = ({ isOpen, onClose, onSubmit, product = null }) => {
   const [formData, setFormData] = useState({
@@ -70,115 +70,72 @@ const ProductModal = ({ isOpen, onClose, onSubmit, product = null }) => {
 
   if (!isOpen) return null;
 
+  const inputClass = "w-full px-4 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-sm text-stone-700 dark:text-stone-200 outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all placeholder-stone-400";
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col animate-fade-in-up">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+      <div className="bg-white dark:bg-stone-900 rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col animate-fade-in border border-stone-200 dark:border-stone-800">
         {/* Header */}
-        <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gradient-to-r from-emerald-500/10 to-teal-500/10">
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-            {product ? 'Edit Product' : 'Add New Product'}
+        <div className="p-5 border-b border-stone-200 dark:border-stone-800 flex justify-between items-center">
+          <h2 className="text-lg font-bold text-stone-900 dark:text-white">
+            {product ? 'Edit product' : 'New product'}
           </h2>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors text-gray-500">
-            <X className="h-6 w-6" />
+          <button onClick={onClose} className="p-1.5 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-lg transition-colors text-stone-500">
+            <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Product Name</label>
-              <input
-                required
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="e.g. Wireless Headphones"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-900 focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
-              />
+        <form onSubmit={handleSubmit} className="p-5 overflow-y-auto space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium text-stone-500 dark:text-stone-400 mb-1.5 block">Product name</label>
+              <input required name="name" value={formData.name} onChange={handleChange} placeholder="e.g. Wireless Headphones" className={inputClass} />
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
-              <input
-                required
-                name="category"
-                value={formData.category}
-                onChange={handleChange}
-                placeholder="e.g. Electronics"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-900 focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
-              />
+            <div>
+              <label className="text-sm font-medium text-stone-500 dark:text-stone-400 mb-1.5 block">Category</label>
+              <input required name="category" value={formData.category} onChange={handleChange} placeholder="e.g. Electronics" className={inputClass} />
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Price ($)</label>
-              <input
-                required
-                type="number"
-                name="price"
-                value={formData.price}
-                onChange={handleChange}
-                placeholder="0.00"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-900 focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
-              />
+            <div>
+              <label className="text-sm font-medium text-stone-500 dark:text-stone-400 mb-1.5 block">Price ($)</label>
+              <input required type="number" name="price" value={formData.price} onChange={handleChange} placeholder="0.00" className={inputClass} />
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Stock Quantity</label>
-              <input
-                required
-                type="number"
-                name="stock"
-                value={formData.stock}
-                onChange={handleChange}
-                placeholder="100"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-900 focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
-              />
+            <div>
+              <label className="text-sm font-medium text-stone-500 dark:text-stone-400 mb-1.5 block">Stock</label>
+              <input required type="number" name="stock" value={formData.stock} onChange={handleChange} placeholder="100" className={inputClass} />
             </div>
-            <div className="space-y-2 md:col-span-2">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Brand</label>
-              <input
-                required
-                name="brand"
-                value={formData.brand}
-                onChange={handleChange}
-                placeholder="e.g. Sony"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-900 focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
-              />
+            <div className="md:col-span-2">
+              <label className="text-sm font-medium text-stone-500 dark:text-stone-400 mb-1.5 block">Brand</label>
+              <input required name="brand" value={formData.brand} onChange={handleChange} placeholder="e.g. Sony" className={inputClass} />
             </div>
-            <div className="space-y-2 md:col-span-2">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
-              <textarea
-                required
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                rows="3"
-                placeholder="Describe your product..."
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-900 focus:ring-2 focus:ring-emerald-500 outline-none transition-all resize-none"
-              />
+            <div className="md:col-span-2">
+              <label className="text-sm font-medium text-stone-500 dark:text-stone-400 mb-1.5 block">Description</label>
+              <textarea required name="description" value={formData.description} onChange={handleChange} rows="3" placeholder="Describe your product…" className={inputClass + ' resize-none'} />
             </div>
           </div>
 
           {/* Image Upload */}
-          <div className="space-y-4">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
-              Product Images <span className="ml-2 text-xs text-gray-500">(Max 10)</span>
+          <div>
+            <label className="text-sm font-medium text-stone-500 dark:text-stone-400 mb-2 block">
+              Images <span className="text-stone-400 font-normal">(max 10)</span>
             </label>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-3">
               {previews.map((preview, index) => (
-                <div key={index} className="relative w-24 h-24 rounded-xl overflow-hidden border border-gray-200 group">
+                <div key={index} className="relative w-20 h-20 rounded-xl overflow-hidden border border-stone-200 dark:border-stone-700 group">
                   <img src={preview} alt="preview" className="w-full h-full object-cover" />
                   <button
                     type="button"
                     onClick={() => removeImage(index)}
-                    className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                   >
-                    <X className="h-3 w-3" />
+                    <X className="h-4 w-4 text-white" />
                   </button>
                 </div>
               ))}
               {previews.length < 10 && (
-                <label className="w-24 h-24 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl cursor-pointer hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 transition-all">
-                  <Plus className="h-6 w-6 text-gray-400" />
-                  <span className="text-[10px] mt-1 text-gray-500">Add Image</span>
+                <label className="w-20 h-20 flex flex-col items-center justify-center border-2 border-dashed border-stone-300 dark:border-stone-600 rounded-xl cursor-pointer hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 transition-all">
+                  <Plus className="h-5 w-5 text-stone-400" />
+                  <span className="text-[10px] mt-0.5 text-stone-400">Add</span>
                   <input type="file" multiple accept="image/*" onChange={handleImageChange} className="hidden" />
                 </label>
               )}
@@ -187,19 +144,19 @@ const ProductModal = ({ isOpen, onClose, onSubmit, product = null }) => {
         </form>
 
         {/* Footer */}
-        <div className="p-6 border-t border-gray-100 dark:border-gray-700 flex justify-end gap-4 bg-gray-50 dark:bg-gray-800/50">
+        <div className="p-5 border-t border-stone-200 dark:border-stone-800 flex justify-end gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="px-6 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-medium"
+            className="px-5 py-2 rounded-lg text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors text-sm font-medium"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
-            className="px-8 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 shadow-lg shadow-emerald-600/20 transition-all font-bold"
+            className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors text-sm font-semibold"
           >
-            {product ? 'Save Changes' : 'Create Product'}
+            {product ? 'Save changes' : 'Create product'}
           </button>
         </div>
       </div>

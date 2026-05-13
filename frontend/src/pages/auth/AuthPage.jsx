@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { LogIn, UserPlus, KeyRound } from 'lucide-react';
+import { LogIn, UserPlus, KeyRound, ArrowRight, Eye, EyeOff } from 'lucide-react';
 
 const AuthPage = () => {
   const [mode, setMode] = useState('login'); // 'login', 'signup', 'otp'
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   // Core Form states
   const [name, setName] = useState('');
@@ -96,97 +97,143 @@ const AuthPage = () => {
     setLoading(false);
   };
 
+  const inputClass = "w-full px-4 py-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl text-sm text-stone-800 dark:text-stone-200 placeholder-stone-400 dark:placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-all duration-200";
+  const labelClass = "block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1.5";
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center">
-          <div className="rounded-full bg-blue-100 p-4 shadow-sm">
-            {mode === 'login' && <LogIn className="h-8 w-8 text-blue-600" />}
-            {mode === 'signup' && <UserPlus className="h-8 w-8 text-blue-600" />}
-            {mode === 'otp' && <KeyRound className="h-8 w-8 text-blue-600" />}
+    <div className="min-h-screen bg-stone-50 dark:bg-stone-950 flex">
+      {/* Left decorative panel — hidden on mobile */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
+        <div className="relative z-10 flex flex-col justify-center px-16 text-white">
+          <div className="mb-8">
+            <span className="text-2xl font-bold tracking-tight">NexCart</span>
+          </div>
+          <h1 className="text-4xl font-bold leading-tight mb-4">
+            Shopping made<br />simple and fast.
+          </h1>
+          <p className="text-blue-200 text-base max-w-sm leading-relaxed">
+            Join thousands of happy customers. Browse curated products, checkout in seconds, and get doorstep delivery.
+          </p>
+          <div className="mt-12 flex items-center gap-6 text-sm text-blue-200">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                <span className="text-xs">✦</span>
+              </div>
+              <span>Free shipping</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                <span className="text-xs">✦</span>
+              </div>
+              <span>Secure payment</span>
+            </div>
           </div>
         </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 tracking-tight">
-          {mode === 'login' ? 'Sign in to your account' : 
-           mode === 'signup' ? 'Create a new account' : 
-           'Verify your email'}
-        </h2>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-lg">
-        <div className="bg-white py-8 px-4 shadow-lg sm:rounded-xl sm:px-10 border border-gray-100">
+      {/* Right form panel */}
+      <div className="flex-1 flex flex-col justify-center py-12 px-6 sm:px-12 lg:px-16">
+        <div className="w-full max-w-md mx-auto">
+          {/* Mobile logo */}
+          <div className="lg:hidden mb-8">
+            <span className="text-xl font-bold text-stone-800 dark:text-white">NexCart</span>
+          </div>
+
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-stone-900 dark:text-white">
+              {mode === 'login' ? 'Welcome back' : 
+               mode === 'signup' ? 'Create your account' : 
+               'Verify your email'}
+            </h2>
+            <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">
+              {mode === 'login' ? 'Enter your credentials to access your account.' : 
+               mode === 'signup' ? 'Fill in your details to get started.' : 
+               `We sent a code to ${email}`}
+            </p>
+          </div>
           
           {error && (
-            <div className="mb-4 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-md">
-              <p className="text-sm text-red-700 font-medium">{error}</p>
+            <div className="mb-5 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-4 py-3 rounded-xl">
+              <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
             </div>
           )}
 
           {successMsg && (
-            <div className="mb-4 bg-green-50 border-l-4 border-green-500 p-4 rounded-r-md">
-              <p className="text-sm text-green-700 font-medium">{successMsg}</p>
+            <div className="mb-5 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 px-4 py-3 rounded-xl">
+              <p className="text-sm text-emerald-700 dark:text-emerald-400">{successMsg}</p>
             </div>
           )}
 
           {/* LOGIN FORM */}
           {mode === 'login' && (
-            <form className="space-y-5" onSubmit={handleLoginSubmit}>
+            <form className="space-y-4" onSubmit={handleLoginSubmit}>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email address</label>
+                <label className={labelClass}>Email</label>
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition duration-150"
+                  className={inputClass}
                   placeholder="you@example.com"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition duration-150"
-                  placeholder="••••••••"
-                />
+                <label className={labelClass}>Password</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className={inputClass + ' pr-11'}
+                    placeholder="Enter your password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 mt-6"
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 mt-2"
               >
-                {loading ? 'Signing in...' : 'Sign in'}
+                {loading ? 'Signing in…' : 'Sign in'}
+                {!loading && <ArrowRight className="h-4 w-4" />}
               </button>
             </form>
           )}
 
           {/* SIGNUP FORM */}
           {mode === 'signup' && (
-            <form className="space-y-5" onSubmit={handleSignupSubmit}>
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <form className="space-y-4" onSubmit={handleSignupSubmit}>
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                  <label className={labelClass}>Full Name</label>
                   <input
                     type="text"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition duration-150"
+                    className={inputClass}
                     placeholder="John Doe"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                  <label className={labelClass}>Role</label>
                   <select
                     value={role}
                     onChange={(e) => setRole(e.target.value)}
-                    className="block w-full px-3 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-lg border bg-white shadow-sm transition duration-150"
+                    className={inputClass}
                   >
                     <option value="customer">Customer</option>
                     <option value="seller">Seller</option>
@@ -196,53 +243,52 @@ const AuthPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email address</label>
+                <label className={labelClass}>Email</label>
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition duration-150"
+                  className={inputClass}
                   placeholder="you@example.com"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                <label className={labelClass}>Phone Number</label>
                 <input
                   type="tel"
                   pattern="[0-9]{10}"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition duration-150"
-                  placeholder="1234567890"
+                  className={inputClass}
+                  placeholder="10 digit number"
                 />
-                <p className="mt-1 text-xs text-gray-500">Must be exactly 10 digits.</p>
               </div>
 
               {/* Dynamic Seller Fields */}
               {role === 'seller' && (
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-4 mt-2">
-                  <h4 className="font-semibold text-gray-700 text-sm">Seller Information</h4>
+                <div className="bg-stone-100 dark:bg-stone-800/50 p-4 rounded-xl space-y-3 border border-stone-200 dark:border-stone-700">
+                  <p className="text-sm font-semibold text-stone-700 dark:text-stone-300">Seller details</p>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Store Name</label>
+                    <label className={labelClass}>Store Name</label>
                     <input
                       type="text"
                       required
                       value={storeName}
                       onChange={(e) => setStoreName(e.target.value)}
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent sm:text-sm"
+                      className={inputClass}
                       placeholder="My Awesome Store"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Store Description</label>
+                    <label className={labelClass}>Store Description</label>
                     <textarea
                       required
                       value={storeDescription}
                       onChange={(e) => setStoreDescription(e.target.value)}
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent sm:text-sm"
-                      placeholder="We sell the best..."
+                      className={inputClass + ' resize-none'}
+                      placeholder="Brief description of what you sell"
                       rows="2"
                     />
                   </div>
@@ -250,25 +296,25 @@ const AuthPage = () => {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <label className={labelClass}>Password</label>
                 <input
                   type="password"
                   required
                   minLength={6}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition duration-150"
-                  placeholder="••••••••"
+                  className={inputClass}
+                  placeholder="Min 6 characters"
                 />
-                <p className="mt-1 text-xs text-gray-500">Minimum 6 characters.</p>
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 mt-6"
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 mt-2"
               >
-                {loading ? 'Creating account...' : 'Create Account'}
+                {loading ? 'Creating account…' : 'Create Account'}
+                {!loading && <ArrowRight className="h-4 w-4" />}
               </button>
             </form>
           )}
@@ -277,16 +323,16 @@ const AuthPage = () => {
           {mode === 'otp' && (
             <form className="space-y-5" onSubmit={handleOtpSubmit}>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1 text-center">
-                  Enter the 6-digit OTP sent to <br/><span className="font-bold text-blue-600">{email}</span>
+                <label className={labelClass + ' text-center'}>
+                  Enter the 6-digit code
                 </label>
                 <input
                   type="text"
                   required
                   maxLength={6}
                   value={otp}
-                  onChange={(e) => setOtp(e.target.value)} // need string
-                  className="appearance-none block w-full px-3 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-2xl text-center tracking-widest transition duration-150"
+                  onChange={(e) => setOtp(e.target.value)}
+                  className={inputClass + ' text-center text-2xl tracking-[0.5em] font-mono'}
                   placeholder="000000"
                 />
               </div>
@@ -294,54 +340,44 @@ const AuthPage = () => {
               <button
                 type="submit"
                 disabled={loading || otp.length < 6}
-                className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 mt-6"
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
               >
-                {loading ? 'Verifying...' : 'Verify OTP & Login'}
+                {loading ? 'Verifying…' : 'Verify & Sign in'}
+                {!loading && <ArrowRight className="h-4 w-4" />}
               </button>
             </form>
           )}
 
-          {/* Toggles */}
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">
-                  {mode === 'login' ? 'New here?' : mode === 'signup' ? 'Already have an account?' : 'Need to change email?'}
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-6 flex justify-center">
-              {mode !== 'signup' && (
-                <button
-                  onClick={() => { setMode('signup'); setError(''); setSuccessMsg(''); }}
-                  className="text-sm font-medium text-blue-600 hover:text-blue-500 transition duration-150"
-                >
-                  Create an account
-                </button>
-              )}
-              {mode !== 'login' && mode !== 'otp' && (
-                <button
-                  onClick={() => { setMode('login'); setError(''); setSuccessMsg(''); }}
-                  className="text-sm font-medium text-blue-600 hover:text-blue-500 transition duration-150"
-                >
-                  Sign in instead
-                </button>
-              )}
-              {mode === 'otp' && (
-                <button
-                  onClick={() => { setMode('signup'); setError(''); setSuccessMsg(''); }}
-                  className="text-sm font-medium text-blue-600 hover:text-blue-500 transition duration-150"
-                >
-                  Go back to sign up
-                </button>
-              )}
-            </div>
+          {/* Toggle links */}
+          <div className="mt-8 text-center">
+            <span className="text-sm text-stone-500 dark:text-stone-400">
+              {mode === 'login' ? "Don't have an account? " : mode === 'signup' ? 'Already have an account? ' : 'Need to change email? '}
+            </span>
+            {mode !== 'signup' && (
+              <button
+                onClick={() => { setMode('signup'); setError(''); setSuccessMsg(''); }}
+                className="text-sm font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 transition-colors"
+              >
+                Sign up
+              </button>
+            )}
+            {mode !== 'login' && mode !== 'otp' && (
+              <button
+                onClick={() => { setMode('login'); setError(''); setSuccessMsg(''); }}
+                className="text-sm font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 transition-colors"
+              >
+                Sign in
+              </button>
+            )}
+            {mode === 'otp' && (
+              <button
+                onClick={() => { setMode('signup'); setError(''); setSuccessMsg(''); }}
+                className="text-sm font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 transition-colors"
+              >
+                Go back
+              </button>
+            )}
           </div>
-
         </div>
       </div>
     </div>

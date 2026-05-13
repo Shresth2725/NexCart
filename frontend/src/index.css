@@ -1,35 +1,69 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
 
 /* Configure the dark variant to look for the .dark class */
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-primary: #3b82f6; /* Tailwind Blue 500 */
-  --color-secondary: #10b981; /* Tailwind Emerald 500 */
+  --color-primary: #2563eb;
+  --color-secondary: #059669;
+  --color-accent: #7c3aed;
+  --font-sans: 'Inter', 'DM Sans', system-ui, -apple-system, sans-serif;
 }
 
 @layer base {
   body {
-    @apply bg-gray-50 text-gray-900 antialiased;
+    @apply bg-stone-50 text-stone-800 antialiased;
+    font-family: 'Inter', 'DM Sans', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .dark body {
+    @apply bg-stone-950 text-stone-200;
+  }
+
+  * {
+    @apply border-stone-200 dark:border-stone-800;
   }
 }
 
 @layer utilities {
-  .animate-fade-in-up {
-    animation: fadeInUp 0.4s ease-out forwards;
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
   }
-  
+
+  .animate-slide-up {
+    animation: slideUp 0.35s ease-out forwards;
+  }
+
   .custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
+    width: 5px;
   }
   .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-gray-200 dark:bg-gray-800 rounded-full;
+    @apply bg-stone-300 dark:bg-stone-700 rounded-full;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-300 dark:bg-gray-700;
+    @apply bg-stone-400 dark:bg-stone-600;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -42,4 +76,8 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease-out forwards;
 }
