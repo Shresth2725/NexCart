@@ -127,7 +127,7 @@ const Cart = () => {
       }
 
       const options = {
-        key: 'rzp_test_Sg6XtFyuas05jM',
+        key: import.meta.env.VITE_RAZORPAY_KEY,
         amount: razorpayOrder.amount,
         currency: razorpayOrder.currency,
         name: 'NexCart',

@@ -24,3 +24,7 @@ spec:
 
           ports:
             - containerPort: 80
+
+          envFrom:
+            - secretRef:
+                name: frontend-secret
