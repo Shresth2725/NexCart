@@ -77,7 +77,6 @@ pipeline {
                     }
                 }
             }
-        }   
 
         stage('Login to DockerHub') {
             steps {
