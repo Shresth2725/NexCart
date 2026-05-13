@@ -68,10 +68,10 @@ pipeline {
 
                             sh """
                             trivy image \
-                            ${DOCKERHUB_USER}/${service}:latest \
                             --format table \
-                            --severity CRITICAL\
-                            --exit-code 1
+                            --severity CRITICAL \
+                            --exit-code 1 \
+                            ${DOCKERHUB_USER}/${service}:latest
                             """
                         }
                     }
