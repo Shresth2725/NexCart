@@ -46,6 +46,19 @@ pipeline {
             }
         }
 
+        stage('Secret Scan - Gitleaks') {
+            steps {
+
+                echo 'Scanning for secrets...'
+
+                sh '''
+                gitleaks detect . \
+                --verbose \
+                --redact
+                '''
+            }
+        }
+
         stage('SonarQube Analysis') {
             steps {
 
