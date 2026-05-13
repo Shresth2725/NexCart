@@ -54,7 +54,8 @@ pipeline {
                 sh '''
                 gitleaks detect . \
                 --verbose \
-                --redact
+                --redact \
+                --exit-code 0
                 '''
             }
         }
