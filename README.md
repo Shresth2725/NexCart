@@ -190,30 +190,36 @@ kubectl apply -f kubernetes/ -R
 
 ## ⚙️ CI/CD Pipeline
 
-The Jenkins pipeline (`Jenkinsfile`) automates the full delivery lifecycle:
+The Jenkins pipeline (`Jenkinsfile`) automates the full delivery lifecycle, incorporating robust security and code quality checks (DevSecOps) before deployment:
 
 ```mermaid
-graph LR
+graph TD
     A[Checkout Code] --> B[Build & Tag Docker Images]
-    B --> C[Login to DockerHub]
-    C --> D[Push Images — latest + build number]
-    D --> E[Deploy to Kubernetes]
-    E --> F[Rolling Update — Zero Downtime]
+    B --> C[Secret Scan - Gitleaks]
+    C --> D[SonarQube Analysis]
+    D --> E[Vulnerability Scan - Trivy]
+    E --> F[Login to DockerHub]
+    F --> G[Push Images — latest & build_number]
+    G --> H[Deploy to Kubernetes]
+    H --> I[Rolling Update — Zero Downtime]
 ```
 
 ### Pipeline Stages
 
 | Stage | Description |
 |---|---|
-| **Checkout** | Pulls latest code from GitHub |
-| **Build & Tag** | Builds Docker images for all 8 services, tagged with `latest` and build number |
-| **Push** | Pushes all images to DockerHub (`shresth2725/*`) |
-| **Deploy** | Rolling update via `kubectl set image` + `kubectl rollout status` in `nexcart` namespace |
+| **Checkout Code** | Pulls the latest code from GitHub |
+| **Build & Tag** | Builds Docker images for all 8 services, tagged with `latest` and Jenkins build number |
+| **Secret Scan** | Uses Gitleaks to detect hardcoded secrets, passwords, or keys in the repository |
+| **SonarQube Analysis** | Performs static code analysis to ensure code quality, maintainability, and detect bugs |
+| **Vulnerability Scan** | Uses Trivy to scan the built Docker images for critical CVEs and vulnerabilities |
+| **Push Images** | Pushes the validated images to DockerHub (`shresth2725/*`) |
+| **Deploy to K8s** | Executes rolling updates via `kubectl set image` and verifies rollout status in the `nexcart` namespace |
 
 ### Services Deployed
 - `auth-service`, `notification-service`, `products-service`, `cart-service`, `order-service`, `payment-service`, `frontend`, `api-gateway`
 
-Each K8s deployment runs **2 replicas** with rolling update strategy for zero-downtime deployments.
+Each K8s deployment runs **2 replicas** with a rolling update strategy for zero-downtime deployments.
 
 ---
 
