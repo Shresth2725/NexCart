@@ -6,6 +6,7 @@ metadata:
   namespace: nexcart
 
 spec:
+  revisionHistoryLimit: 0
   replicas: 5
 
   selector:
