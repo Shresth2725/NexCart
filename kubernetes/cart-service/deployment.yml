@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: cart-service
-          image: shresth2725/cart-service:45
+          image: shresth2725/cart-service:46
 
           envFrom:
             - secretRef:

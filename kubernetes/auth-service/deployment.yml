@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: shresth2725/auth-service:45
+          image: shresth2725/auth-service:46
 
           envFrom:
             - secretRef:
