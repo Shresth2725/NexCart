@@ -32,7 +32,7 @@ const Navbar = ({ onSearch }) => {
             onClick={() => navigate('/home')}
             className="text-2xl font-bold text-blue-600 tracking-tight cursor-pointer hover:text-blue-700 transition"
           >
-            NexCart
+            NexCart-Devops
           </button>
 
           {/* Search Bar */}

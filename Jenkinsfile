@@ -190,43 +190,98 @@ pipeline {
         //     }
         // }
 
-        stage('Deploy to Kubernetes') {
+        // stage('Deploy to Kubernetes') {
+        //     steps {
 
+        //         withCredentials([
+        //             file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')
+        //         ]) {
+
+        //             script {
+        //                 def deployments = [
+        //                     [k8sName: 'auth-service',         imageName: 'auth-service'],
+        //                     [k8sName: 'notification-service', imageName: 'notification-service'],
+        //                     [k8sName: 'product-service',      imageName: 'products-service'],
+        //                     [k8sName: 'cart-service',          imageName: 'cart-service'],
+        //                     [k8sName: 'order-service',         imageName: 'order-service'],
+        //                     [k8sName: 'payment-service',       imageName: 'payment-service'],
+        //                     [k8sName: 'frontend',              imageName: 'frontend'],
+        //                     [k8sName: 'gateway',               imageName: 'api-gateway']
+        //                 ]
+
+        //                 for (dep in deployments) {
+
+        //                     echo "Deploying ${dep.k8sName}..."
+
+        //                     sh """
+        //                     kubectl set image deployment/${dep.k8sName}-deployment \
+        //                     ${dep.k8sName}=${DOCKERHUB_USER}/${dep.imageName}:${BUILD_NUMBER} \
+        //                     -n nexcart
+
+        //                     kubectl rollout status deployment/${dep.k8sName}-deployment \
+        //                     -n nexcart
+        //                     """
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+
+        stage('Update Kubernetes Manifests') {
             steps {
 
-                withCredentials([
-                    file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')
-                ]) {
+                script {
 
-                    script {
-                        def deployments = [
-                            [k8sName: 'auth-service',         imageName: 'auth-service'],
-                            [k8sName: 'notification-service', imageName: 'notification-service'],
-                            [k8sName: 'product-service',      imageName: 'products-service'],
-                            [k8sName: 'cart-service',          imageName: 'cart-service'],
-                            [k8sName: 'order-service',         imageName: 'order-service'],
-                            [k8sName: 'payment-service',       imageName: 'payment-service'],
-                            [k8sName: 'frontend',              imageName: 'frontend'],
-                            [k8sName: 'gateway',               imageName: 'api-gateway']
-                        ]
+                    def deployments = [
+                        [path: 'kubernetes/auth-service/deployment.yml',         image: 'auth-service'],
+                        [path: 'kubernetes/notification-service/deployment.yml', image: 'notification-service'],
+                        [path: 'kubernetes/product-service/deployment.yml',      image: 'products-service'],
+                        [path: 'kubernetes/cart-service/deployment.yml',         image: 'cart-service'],
+                        [path: 'kubernetes/order-service/deployment.yml',        image: 'order-service'],
+                        [path: 'kubernetes/payment-service/deployment.yml',      image: 'payment-service'],
+                        [path: 'kubernetes/frontend/deployment.yml',             image: 'frontend'],
+                        [path: 'kubernetes/gateway/deployment.yml',              image: 'api-gateway']
+                    ]
 
-                        for (dep in deployments) {
+                    for (dep in deployments) {
 
-                            echo "Deploying ${dep.k8sName}..."
+                        echo "Updating ${dep.image} manifest..."
 
-                            sh """
-                            kubectl set image deployment/${dep.k8sName}-deployment \
-                            ${dep.k8sName}=${DOCKERHUB_USER}/${dep.imageName}:${BUILD_NUMBER} \
-                            -n nexcart
-
-                            kubectl rollout status deployment/${dep.k8sName}-deployment \
-                            -n nexcart
-                            """
-                        }
+                        sh """
+                        sed -i 's|image: .*|image: ${DOCKERHUB_USER}/${dep.image}:${BUILD_NUMBER}|g' ${dep.path}
+                        """
                     }
                 }
             }
         }
+
+        stage('Push Updated Manifests') {
+
+            steps {
+
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'github-creds',
+                        usernameVariable: 'GIT_USER',
+                        passwordVariable: 'GIT_PASS'
+                    )
+                ]) {
+
+                    sh """
+                    git config user.email "jenkins@nexcart.com"
+                    git config user.name "jenkins"
+
+                    git add .
+
+                    git commit -m "Updated image tags to build ${BUILD_NUMBER}" || true
+
+                    git push https://${GIT_USER}:${GIT_PASS}@github.com/Shresth2725/NexCart.git HEAD:main
+                    """
+                }
+            }
+        }
+
+
     }
 
     post {
