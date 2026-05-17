@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: order-service
-          image: shresth2725/order-service:14
+          image: shresth2725/order-service:45
 
           envFrom:
             - secretRef:

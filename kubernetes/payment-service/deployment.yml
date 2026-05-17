@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: payment-service
-          image: shresth2725/payment-service:14
+          image: shresth2725/payment-service:45
 
           envFrom:
             - secretRef:
