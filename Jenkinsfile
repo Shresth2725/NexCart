@@ -267,7 +267,7 @@ pipeline {
                     )
                 ]) {
 
-                    sh """
+                    sh '''
                     git config user.email "jenkins@nexcart.com"
                     git config user.name "jenkins"
 
@@ -275,8 +275,8 @@ pipeline {
 
                     git commit -m "Updated image tags to build ${BUILD_NUMBER}" || true
 
-                    git push https://${GIT_USER}:${GIT_PASS}@github.com/Shresth2725/NexCart.git HEAD:main
-                    """
+                    git push https://${GIT_PASS}@github.com/Shresth2725/NexCart.git HEAD:main
+                    '''
                 }
             }
         }
