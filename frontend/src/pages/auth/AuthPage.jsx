@@ -206,7 +206,7 @@ const AuthPage = () => {
                 disabled={loading}
                 className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 mt-2"
               >
-                {loading ? 'Signing in…' : 'Sign in - Devops'}
+                {loading ? 'Signing in…' : 'Sign in'}
                 {!loading && <ArrowRight className="h-4 w-4" />}
               </button>
             </form>
