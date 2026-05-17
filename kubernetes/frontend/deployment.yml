@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: shresth2725/frontend:48
+          image: shresth2725/frontend:50
 
           ports:
             - containerPort: 80
