@@ -178,48 +178,111 @@ ansible-playbook site.yml -i inventory.ini
 ```
 
 ### Kubernetes Deployment
-```bash
-# Create the namespace
-kubectl apply -f kubernetes/namespaces/namespace.yml
 
-# Deploy all services
-kubectl apply -f kubernetes/ -R
-```
+You can deploy the platform to your Kubernetes cluster using either a manual approach or the recommended GitOps approach.
+
+#### Option A: GitOps Deployment (Recommended)
+This approach leverages **ArgoCD** to automatically synchronize manifests in the `kubernetes` directory to the cluster.
+
+1. **Install ArgoCD on the Cluster:**
+   ```bash
+   # Create the namespace for ArgoCD
+   kubectl create namespace argocd
+
+   # Install ArgoCD services
+   kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+   ```
+
+2. **Apply the NexCart Application Manifest:**
+   ```bash
+   kubectl apply -f argocd/application.yml
+   ```
+   *ArgoCD will automatically create the namespaces, configure resources, and perform zero-downtime rolling updates whenever manifests are updated.*
+
+#### Option B: Manual Deployment
+1. **Create the Namespace:**
+   ```bash
+   kubectl apply -f kubernetes/namespaces/namespace.yml
+   ```
+
+2. **Deploy all Services:**
+   ```bash
+   kubectl apply -f kubernetes/ -R
+   ```
 
 ---
 
-## ⚙️ CI/CD Pipeline
+## ⚙️ CI/CD & GitOps Pipeline
 
-The Jenkins pipeline (`Jenkinsfile`) automates the full delivery lifecycle, incorporating robust security and code quality checks (DevSecOps) before deployment:
+The automated CI/CD pipeline is designed around a modern **GitOps delivery pattern**. The Jenkins pipeline (`Jenkinsfile`) automates checking out, building, and running security tests (DevSecOps). Instead of deploying directly to the cluster, Jenkins updates the Kubernetes manifest configurations in the repository. ArgoCD then detects these changes and synchronizes the cluster state.
 
 ```mermaid
 graph TD
-    A[Checkout Code] --> B[Build & Tag Docker Images]
-    B --> C[Secret Scan - Gitleaks]
-    C --> D[SonarQube Analysis]
-    D --> E[Vulnerability Scan - Trivy]
-    E --> F[Login to DockerHub]
-    F --> G[Push Images — latest & build_number]
-    G --> H[Deploy to Kubernetes]
-    H --> I[Rolling Update — Zero Downtime]
+    A[Push to GitHub] --> B[Jenkins Pipeline Triggered]
+    B --> C[Checkout Code]
+    C --> D[Build & Tag Docker Images]
+    D --> E[Secret Scan - Gitleaks]
+    E --> F[SonarQube Analysis]
+    F --> G[Vulnerability Scan - Trivy]
+    G --> H[Login & Push to DockerHub]
+    H --> I[Update K8s Manifest Image Tags]
+    I --> J[Push Manifest Updates to GitHub]
+    J --> K[ArgoCD Sync Triggered]
+    K --> L[Automated Sync & Self-Healing]
+    L --> M[K8s Zero-Downtime Rolling Update]
 ```
 
-### Pipeline Stages
+### Pipeline Stages & Tools
 
-| Stage | Description |
+| Stage | Description & Security Check |
 |---|---|
-| **Checkout Code** | Pulls the latest code from GitHub |
-| **Build & Tag** | Builds Docker images for all 8 services, tagged with `latest` and Jenkins build number |
-| **Secret Scan** | Uses Gitleaks to detect hardcoded secrets, passwords, or keys in the repository |
-| **SonarQube Analysis** | Performs static code analysis to ensure code quality, maintainability, and detect bugs |
-| **Vulnerability Scan** | Uses Trivy to scan the built Docker images for critical CVEs and vulnerabilities |
-| **Push Images** | Pushes the validated images to DockerHub (`shresth2725/*`) |
-| **Deploy to K8s** | Executes rolling updates via `kubectl set image` and verifies rollout status in the `nexcart` namespace |
+| **Checkout Code** | Pulls the latest project repository from GitHub. |
+| **Build & Tag** | Builds highly optimized Docker images for all 8 microservices, tagged with both `latest` and `BUILD_NUMBER`. |
+| **Secret Scan (Gitleaks)** | Analyzes the repository for exposed credentials, high-entropy strings, and keys, failing the build if any are found. |
+| **SonarQube Analysis** | Assesses code quality, maintainability, and coverage, enforcing code standards. |
+| **Vulnerability Scan (Trivy)** | Scans service Docker images for known CVEs and OS-level vulnerabilities, enforcing a strict zero-critical-CVE policy. |
+| **Push Images** | Pushes fully verified and scanned Docker images to DockerHub under `shresth2725/*`. |
+| **Update Manifests** | Modifies the deployment YAML files inside `kubernetes/` to update the image tags with the new `BUILD_NUMBER`. |
+| **Push Manifests** | Commits and pushes the modified manifest files back to the repository's `main` branch. |
+| **ArgoCD Sync** | ArgoCD detects the change on GitHub, applies the differences, and synchronizes the cluster. |
 
-### Services Deployed
-- `auth-service`, `notification-service`, `products-service`, `cart-service`, `order-service`, `payment-service`, `frontend`, `api-gateway`
+---
 
-Each K8s deployment runs **2 replicas** with a rolling update strategy for zero-downtime deployments.
+## 🐙 GitOps & Continuous Delivery (ArgoCD)
+
+NexCart uses **ArgoCD** for declarative GitOps continuous delivery. The configuration in `argocd/application.yml` points to the `kubernetes` directory of this repository and automatically synchronizes cluster deployments to match.
+
+### GitOps Core Features
+
+- **Automated Synchronization** (`syncPolicy.automated`) — Syncs changes in the repository to the live cluster automatically.
+- **Automated Pruning** (`prune: true`) — Cleans up resources from the cluster that are deleted from the repository.
+- **Self-Healing** (`selfHeal: true`) — Restores cluster state if manual changes are made in the cluster, preventing drift.
+- **Namespace Creation** (`CreateNamespace=true`) — Ensures all required namespaces exist on the target cluster.
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ecommerce-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Shresth2725/NexCart.git
+    targetRevision: HEAD
+    path: kubernetes
+    directory:
+      recurse: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+```
 
 ---
 
@@ -316,7 +379,7 @@ Navigate to **Dashboards → Kubernetes** in Grafana to view cluster metrics.
 - [x] Terraform IaC for AWS infrastructure
 - [x] Ansible automation for K8s cluster setup
 - [x] Jenkins CI/CD pipeline with K8s deployment
-- [ ] ArgoCD — GitOps-based continuous delivery
+- [x] ArgoCD — GitOps-based continuous delivery
 - [x] Monitoring — Prometheus + Grafana dashboards
 - [ ] Logging — ELK stack (Elasticsearch, Logstash, Kibana)
 - [ ] Service Mesh — Istio/Linkerd for traffic management & observability
