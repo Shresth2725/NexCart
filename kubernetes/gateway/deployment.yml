@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: gateway
-          image: shresth2725/api-gateway:52
+          image: shresth2725/api-gateway:54
 
           ports:
             - containerPort: 80
