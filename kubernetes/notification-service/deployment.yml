@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: notification-service
-          image: shresth2725/notification-service:55
+          image: shresth2725/notification-service:56
 
           envFrom:
             - secretRef:
